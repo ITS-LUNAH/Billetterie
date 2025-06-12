@@ -23,7 +23,11 @@ class Event extends Model
         'idorganisateur',
         'prixbase',
     ];
-
+    protected $casts = [
+        'estvalide' => 'boolean',
+        'prixbase' => 'float',
+    ];
+    
     // Relationship to Organisateur
     public function organisateur()
     {
@@ -47,5 +51,34 @@ class Event extends Model
         return $this->hasMany(Promotion::class, 'idEvenement', 'idEvenement'); // Assuming idPromotion in Promotion references idEvenement implicitly
     } */
 
+    // Scope pour la recherche
+    public function scopeSearch($query, $search, $location, $date)
+    {
+        return $query->when($search, function ($query, $search) {
+                return $query->where('titre', 'like', "%{$search}%")
+                           ->orWhere('description', 'like', "%{$search}%");
+            })
+            ->when($location, function ($query, $location) {
+                return $query->where('lieu', 'like', "%{$location}%")
+                           ->orWhereHas('dates.lieu', function ($q) use ($location) {
+                               $q->where('ville', 'like', "%{$location}%")
+                                 ->orWhere('nom', 'like', "%{$location}%");
+                           });
+            })
+            ->when($date, function ($query, $date) {
+                return $query->whereHas('dates', function ($q) use ($date) {
+                    $q->whereDate('datedebut', $date);
+                });
+            })
+            ->where('estvalide', true);
+    }
 
+    // Accesseur pour obtenir la prochaine date
+    public function getProchaineDateAttribute()
+    {
+        return $this->dates()
+                   ->where('datedebut', '>=', now())
+                   ->orderBy('datedebut')
+                   ->first();
+    }
 }

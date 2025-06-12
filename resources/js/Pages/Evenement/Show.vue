@@ -1,8 +1,8 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { ref } from 'vue';
-import SeatPlan from '@/components/SeatPlan.vue';
+import SeatPlan from '@/Components/SeatPlan.vue';
 
 
 // Définir les props que le contrôleur va passer
@@ -13,10 +13,15 @@ const props = defineProps({
         default: () => ({}),
     },
     // Si vous passez déjà les données du plan depuis Laravel, vous pouvez les ajouter ici
-    // planData: {
-    //     type: Object,
-    //     default: null,
-    // }
+     planData: {
+         type: Object,
+         default: null,
+     },
+     canLogin: {
+        Boolean,},
+     canRegister: {
+        Boolean,}
+
 });
 
 const isDescriptionTabActive = ref(true); // Pour gérer les onglets
@@ -37,35 +42,41 @@ const planData = ref({
 
 // Gérer la soumission de la réservation, que ce soit libre ou numérotée
 const handleReservationSubmission = (seats = null, total = null) => {
-    console.log('Bouton cliqué!');
-    console.log('Type de placement:', props.evenement.type_placement);
+    // Vérifier si evenement et type_placement sont définis pour éviter les erreurs
+    if (!props.evenement || !props.evenement.type_placement) {
+        console.error('Erreur: Les informations de l\'événement ou le type de placement sont manquants.');
+        alert('Impossible de procéder à la réservation: informations manquantes.');
+        return;
+    }
+
     if (props.evenement.type_placement === 'Libre') {
-        // Logique de réservation pour placement libre (par exemple, un formulaire de quantité de tickets)
-        // Redirection vers une page de confirmation/formulaire de réservation libre
-        router.visit(route('reservation.create', { evenement: props.evenement.id, type: 'Libre' }));
-    } else if (props.evenement.type_placement === 'numéroté') {
-        // Logique de soumission des sièges sélectionnés
+        // Redirection vers la page de sélection de zone tarifaire pour placement libre
+        router.visit(route('reservation.category.create', { evenement: props.evenement.idEvenement || props.evenement.id }));
+    } else if (props.evenement.type_placement === 'Numéroté') {
+        // Logique pour le placement numéroté (sera activée plus tard)
         if (seats && seats.length > 0) {
-            console.log('Réservation de sièges numérotés:', seats, 'Prix total:', total);
-            // Redirection vers une page de confirmation avec les sièges sélectionnés
-            // Vous devrez créer cette route dans Laravel et le contrôleur correspondant
             router.post(route('reservation.store'), {
-                evenement_id: props.evenement.id,
+                evenement_id: props.evenement.idEvenement || props.evenement.id,
                 selected_seats: seats,
                 total_price: total,
-                type: 'numéroté'
+                type: 'Numéroté',
             });
         } else {
             alert('Veuillez sélectionner au moins un siège pour la réservation numérotée.');
         }
+    } else {
+        console.warn('Type de placement inconnu:', props.evenement.type_placement);
     }
 };
 
 // Fonction pour déterminer le texte du bouton principal (dans Show.vue)
 const getButtonText = () => {
-const text = props.evenement.type_placement === 'Libre' ? 'Réserver maintenant' : 'Sélectionner des sièges';
-    console.log('Texte du bouton:', text);
-    return text;};
+    // S'assurer que evenement est défini avant d'accéder à type_placement
+    if (!props.evenement || !props.evenement.type_placement) {
+        return 'Chargement...'; // Ou un texte par défaut
+    }
+    return props.evenement.type_placement === 'Libre' ? 'Réserver maintenant' : 'Sélectionner des sièges';
+};
 
 // Si vous avez besoin d'utiliser `route()` dans votre script, importez le routeur d'Inertia
 // import { router } from '@inertiajs/vue3';
@@ -74,7 +85,8 @@ const text = props.evenement.type_placement === 'Libre' ? 'Réserver maintenant'
 <template>
     <Head :title="evenement.titre" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <MainLayout> 
+    
+    <GuestLayout :canLogin="canLogin" :canRegister="canRegister"> 
         
         <div class="container mx-auto px-4 py-8">
             
@@ -128,7 +140,28 @@ const text = props.evenement.type_placement === 'Libre' ? 'Réserver maintenant'
                     </div>
 
                 <div>
-                <div v-if="evenement.type_placement === 'numéroté'" class="mt-8 bg-white rounded-lg shadow-md p-6">
+                
+                </div>
+                
+                    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+                    
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4">Réservation</h2>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-gray-700">Prix à partir de</span>
+                            <span class="text-3xl font-bold " style="color: #6B4E71;">{{ evenement.prix }} MAD</span>
+                        </div>
+                        <div class="mt-6 self-end">
+                       <button
+                            @click="handleReservationSubmission"
+                            class="w-full py-3 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors mb-4"
+                            style="background-color: #6B4E71;"
+                        >
+                            {{ getButtonText() }}
+                        </button>
+                        </div>
+                        
+                    </div>
+                    <div v-if="evenement.type_placement === 'Numéroté'" class="mt-8 bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">Sélectionnez vos sièges</h2>
                 <SeatPlan
                             :total-seats="planData.totalSeats"
@@ -138,28 +171,10 @@ const text = props.evenement.type_placement === 'Libre' ? 'Réserver maintenant'
                             @submitReservation="handleReservationSubmission($event[0], $event[1])"
                         />
                 </div>
-                </div>
-                
-                    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
-                    
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4">Réservation</h2>
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-gray-700">Prix à partir de</span>
-                            <span class="text-3xl font-bold text-indigo-600">{{ evenement.prix }} MAD</span>
-                        </div>
-                        <div class="mt-6 self-end">
-                       <button
-                            @click="handleReservationSubmission"
-                            class="w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors mb-4"
-                        >
-                            {{ getButtonText() }}
-                        </button>
-                        </div>
-                    </div>
             </div>
         </div>
     </div>
         </div>
         
-    </MainLayout>
+    </GuestLayout>
 </template>

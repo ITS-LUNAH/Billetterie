@@ -22,11 +22,18 @@ Route::middleware('guest')->group(function () {
     })->name('register.participant');
 
     Route::get('/register/organisateur', function () {
-        return Inertia::render('Auth/Register', ['userTypeProp' => 'Organisateur']);
+        return Inertia::
+        render('Auth/Register', ['userTypeProp' => 'Organisateur']);
     })->name('register.organisateur');
 
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
+   });
+
+   Route::get('/test', function () {
+    return Inertia::render('test', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),]);
    });
 
 // --- Route d'accueil publique (accessible à tous) ---
@@ -64,7 +71,9 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::get('/evenement', [EventController::class, 'index'])->name('evenement.index');
+Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
+// Route pour afficher les détails d'un événement spécifique
 Route::get('/evenement/{event}', [EventController::class, 'show'])->name('evenement.show');
 
 // Nouvelle route pour la sélection de catégorie pour les événements en placement libre
@@ -73,6 +82,8 @@ Route::get('/reservation/{evenement}/categories', [ReservationController::class,
 
 // Route pour soumettre les réservations (utilisée par les deux types de placement)
 Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
+
+
 
 
 // --- Routes accessibles UNIQUEMENT aux utilisateurs connectés (Authentifiés) ---
@@ -130,4 +141,5 @@ Route::middleware([
         Route::get('/dashboard', [OrganisateurDashboardController::class, 'index'])->name('organisateur.dashboard');
         // ... more organisateur specific routes ...
     });
+    
 });

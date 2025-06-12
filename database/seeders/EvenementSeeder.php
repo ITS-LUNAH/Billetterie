@@ -62,9 +62,9 @@ class EvenementSeeder extends Seeder
                 'lieu' => 'Espace d\'Exposition', // Descriptif
                 'bandeannonce' => 'image4.jpg',
                 'typeplacement' => 'Libre',
-                'estvalide' => false, // Cet événement n'est pas encore validé
+                'estvalide' => true, // Cet événement n'est pas encore validé
                 'idorganisateur' => 1,
-                'prixbase' => 0.00, // Événement gratuit
+                'prixbase' => 100.00, // Événement gratuit
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

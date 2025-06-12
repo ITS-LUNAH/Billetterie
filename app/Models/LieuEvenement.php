@@ -19,10 +19,19 @@ class LieuEvenement extends Model
         'adresse',
         'capaciteMax'
     ];
+    protected $casts = [
+        'capaciteMax' => 'integer'
+    ];
 
     public function datesEvenements()
     {
-        return $this->hasMany(date_evenement::class, 'idlieu', 'idlieu');
+        return $this->hasMany(datesEvenements::class, 'idlieu', 'idlieu');
     }
 
+    // Accesseur pour l'adresse complète
+    public function getAdresseCompleteAttribute()
+    {
+        return $this->adresse . ', ' . $this->ville;
+    }
+    
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DateEvenement;
+use App\Models\LieuEvenement;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,15 +14,66 @@ class EventController extends Controller
     /**
      * Display a listing of the events.
      */
-    public function index()
-    {
-        // Ici, vous récupéreriez les événements depuis la base de données
-        // Exemple: $events = \App\Models\Event::all();
+    public function index(Request $request)
+{
+    // Ici, vous récupéreriez les événements depuis la base de données
+    // Exemple: $events = \App\Models\Event::all();
 
-        return Inertia::render('Events/Index', [
-            // 'events' => $events, // Passez les données d'événements à votre composant Vue
-        ]);
-    }
+    
+    $search = $request->get('search');
+    $location = $request->get('location');
+    $date = $request->get('date');
+
+    $events = Event::with(['dates.lieu', 'organisateur'])
+        ->search($search, $location, $date)
+        ->orderBy('created_at', 'desc')
+        ->paginate(12)
+        ->withQueryString();
+
+    // Transformer les données pour l'affichage
+    $events->getCollection()->transform(function ($event) {
+        $prochainDate = $event->prochaine_date;
+        
+        return [
+            'idevenement' => $event->idevenement,
+            'titre' => $event->titre,
+            'description' => $event->description,
+            'lieu' => $event->lieu,
+            'bandeannonce' => $event->bandeannonce ? asset('storage/events-photos/' . $event->bandeannonce) : null,
+            'prixbase' => $event->prixbase,
+            'prochaine_date' => $prochainDate ? [
+                'datedebut' => $prochainDate->datedebut,
+                'heuredebut' => $prochainDate->heuredebut,
+                'lieu_evenement' => $prochainDate->lieu,
+                'places_restantes' => $prochainDate->places_restantes
+            ] : null
+        ];
+    });
+
+    return Inertia::render('Evenement/Index', [
+        'events' => $events,
+        'filters' => [
+            'search' => $search,
+            'location' => $location,
+            'date' => $date,
+        ]
+    ]);
+}
+
+public function search(Request $request)
+{
+    $request->validate([
+        'search' => 'nullable|string|max:255',
+        'location' => 'nullable|string|max:255',
+        'date' => 'nullable|date',
+    ]);
+
+    return redirect()->route('evenement.index', [
+        'search' => $request->search,
+        'location' => $request->location,
+        'date' => $request->date,
+    ]);
+}
 
 /**
      * Affiche les détails d'un événement spécifique.
