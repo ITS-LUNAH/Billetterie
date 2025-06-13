@@ -10,17 +10,20 @@ class Billet extends Model
     //
     use HasFactory;
     
-    protected $table = 'billets'; // Nom de la table associée
-    protected $primaryKey = 'idbillet'; // Clé primaire de la table
-
+    protected $table = 'billets'; 
+    protected $primaryKey = 'idbillet';
+    
     protected $fillable = [
-        'idevenement',
         'estscanne',
         'dateValidation',
         'QRcode',
         'idparticipant',
         'idreservation',
         'idzone',
+    ];
+    protected $casts = [
+        'estscanne' => 'boolean',
+        'datevalidation' => 'datetime'
     ];
 
     // Relation avec l'événement
@@ -45,6 +48,12 @@ class Billet extends Model
     public function zoneTarifaire()
     {
         return $this->belongsTo(ZoneTarifaire::class, 'idzone', 'idzone');
+    }
+
+    // Générer un QR code unique
+    public static function generateQRCode()
+    {
+        return 'EVUP-' . uniqid() . '-' . time();
     }
 
 }

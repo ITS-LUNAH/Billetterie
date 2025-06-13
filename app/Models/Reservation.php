@@ -10,13 +10,16 @@ class Reservation extends Model
     //
      use HasFactory;
 
-    protected $table = 'reservations'; // Nom de la table associée
-    protected $primaryKey = 'idreservation'; // Clé primaire de la table
+    protected $table = 'reservations'; 
+    protected $primaryKey = 'idreservation'; 
     
     protected $fillable = [
         'datereservation',
         'etat',
         'idparticipant',
+    ];
+    protected $casts = [
+        'datereservation' => 'datetime'
     ];
 
     //Relation avec le participant
@@ -28,7 +31,20 @@ class Reservation extends Model
     //Relation avec les billets (une réservation peut avoir plusieurs billets)
      public function billets()
     {
-        return $this->hasMany(Billet::class, 'idReservation', 'idReservation');
+        return $this->hasMany(Billet::class, 'idreservation', 'idreservation');
+    }
+    // Méthode pour obtenir le montant total
+    public function getMontantTotalAttribute()
+    {
+        return $this->billets->sum(function ($billet) {
+            return $billet->zone ? $billet->zone->tarif : 0;
+        });
+    }
+
+    // Méthode pour obtenir l'événement (via le premier billet)
+    public function getEvenementAttribute()
+    {
+        return $this->billets->first() ? $this->billets->first()->evenement : null;
     }
 
 }

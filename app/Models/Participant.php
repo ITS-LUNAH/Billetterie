@@ -28,4 +28,14 @@ class Participant extends Model
     {
         return $this->belongsTo(User::class);
     }
+    // Relation avec les réservations
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'idParticipant', 'idParticipant');
+    }
+    // Relation avec les billets
+    public function billets()
+    {
+        return $this->hasMany(Billet::class, 'idParticipant', 'idParticipant');
+    }
 }

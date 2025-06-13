@@ -4,7 +4,6 @@ import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { ref } from 'vue';
 import SeatPlan from '@/Components/SeatPlan.vue';
 
-
 // Définir les props que le contrôleur va passer
 const props = defineProps({
     evenement: {
@@ -21,12 +20,10 @@ const props = defineProps({
         Boolean,},
      canRegister: {
         Boolean,}
-
 });
 
 const isDescriptionTabActive = ref(true); // Pour gérer les onglets
 const selectedSeatsForPlan = ref([]); // Pour stocker les sièges sélectionnés du composant SeatPlan
-
 
 // Ces données devraient venir de la base de données via votre contrôleur pour l'événement numéroté
 const planData = ref({
@@ -48,15 +45,23 @@ const handleReservationSubmission = (seats = null, total = null) => {
         alert('Impossible de procéder à la réservation: informations manquantes.');
         return;
     }
-
+const eventId = props.evenement.idevenement || props.evenement.idevenement;
+if (!eventId) {
+    console.error('Erreur: ID de l\'événement non défini');
+    alert('Impossible de procéder à la réservation: ID de l\'événement manquant.');
+    return;
+}
+    // Déboguer pour voir l'ID de l\'événement
+    console.log('ID de l\'événement:', props.evenement.idevenement);
+    
     if (props.evenement.type_placement === 'Libre') {
-        // Redirection vers la page de sélection de zone tarifaire pour placement libre
-        router.visit(route('reservation.category.create', { evenement: props.evenement.idEvenement || props.evenement.id }));
+        // Utiliser la propriété idevenement qui est passée depuis le contrôleur
+        window.location.href = route('reservation.category.create', eventId); //window.location.href :Pour contourner les problèmes potentiels avec Ziggy et Inertia
     } else if (props.evenement.type_placement === 'Numéroté') {
-        // Logique pour le placement numéroté (sera activée plus tard)
+        // Logique pour le placement numéroté
         if (seats && seats.length > 0) {
             router.post(route('reservation.store'), {
-                evenement_id: props.evenement.idEvenement || props.evenement.id,
+                evenement_id: props.evenement.idevenement,
                 selected_seats: seats,
                 total_price: total,
                 type: 'Numéroté',
@@ -69,7 +74,7 @@ const handleReservationSubmission = (seats = null, total = null) => {
     }
 };
 
-// Fonction pour déterminer le texte du bouton principal (dans Show.vue)
+// Fonction pour déterminer le texte du bouton principal
 const getButtonText = () => {
     // S'assurer que evenement est défini avant d'accéder à type_placement
     if (!props.evenement || !props.evenement.type_placement) {
@@ -77,10 +82,6 @@ const getButtonText = () => {
     }
     return props.evenement.type_placement === 'Libre' ? 'Réserver maintenant' : 'Sélectionner des sièges';
 };
-
-// Si vous avez besoin d'utiliser `route()` dans votre script, importez le routeur d'Inertia
-// import { router } from '@inertiajs/vue3';
-
 </script>
 <template>
     <Head :title="evenement.titre" />

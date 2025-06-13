@@ -17,7 +17,7 @@ class EventController extends Controller
     public function index(Request $request)
 {
     // Ici, vous récupéreriez les événements depuis la base de données
-    // Exemple: $events = \App\Models\Event::all();
+    $events = \App\Models\Event::all();
 
     
     $search = $request->get('search');
@@ -88,7 +88,7 @@ public function search(Request $request)
 
         // Formater les données pour la vue si nécessaire
         $formattedEvent = [
-            'id' => $event->idevenement,
+            'idevenement' => $event->idevenement,
             'titre' => $event->titre,
             'description' => $event->description,
             'image' => $event->bandeannonce ? asset('storage/events-photos/' . $event->bandeannonce) : null,
@@ -108,6 +108,46 @@ public function search(Request $request)
         return Inertia::render('Evenement/Show', [ // Le chemin du composant Vue reste Evenement/Show
             'evenement' => $formattedEvent,
         ]);
+    }
+    
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Event $event)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Event $event)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Event $event)
+    {
+        //
     }
     
 }

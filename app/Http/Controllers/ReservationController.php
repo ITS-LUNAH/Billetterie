@@ -3,18 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event; 
-use App\Models\Category; // Si vous avez un modèle pour les catégories de billets
+use App\Models\Category;
 use App\Models\Reservation;
 use App\Models\Billet;
+use App\Models\ZoneTarifaire;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use App\Models\Participant;
+use App\Models\DateEvenement;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
 {
     //
     /**
-     * Affiche la page de sélection de catégorie pour un événement en placement libre.
+     * Affiche la page de sélection de catégorie pour un événement
      *
      * @param \App\Models\Event $evenement
      * @return \Inertia\Response
@@ -22,40 +27,94 @@ class ReservationController extends Controller
     
     public function createCategorySelection(Event $evenement)
     {
-        if ($evenement->type_placement == 'Libre') {
+        // Débogage pour voir l'ID reçu
+    \Log::info('ID de l\'événement reçu dans createCategorySelection:', [
+        'idevenement' => $evenement->idevenement,
+        'type_placement' => $evenement->typeplacement
+    ]);
+    
+        if ($evenement->typeplacement == 'Libre') {
         
+        // Récupérer la prochaine date d'événement
+        $prochainDate = $evenement->dates()
+            ->where('datedebut', '>=', now())
+            ->orderBy('datedebut')
+            ->first();
+            
+        if (!$prochainDate) {
+            return redirect()->back()->with('error', 'Aucune date future disponible pour cet événement.');
+        }
+        // Récupérer la prochaine date d'événement
+        $prochainDate = $evenement->dates()
+            ->where('datedebut', '>=', now())
+            ->orderBy('datedebut')
+            ->first();
+            
+        if (!$prochainDate) {
+            return redirect()->back()->with('error', 'Aucune date future disponible pour cet événement.');
+        }
+        // Récupérer les zones tarifaires pour le lieu de l'événement
+        $zones = ZoneTarifaire::where('idlieu', $prochainDate->idlieu)->get();
+        
+        // Si aucune zone n'est définie, on utilisaera des zones par défaut
+        if ($zones->isEmpty()) {
+            $zones = [
+                [
+                    'idzone' => 1,
+                    'nomzone' => 'Standard',
+                    'tarif' => $evenement->prixbase,
+                    'couleur' => '#90EE90',
+                    'capacite' => 100,
+                    'places_disponibles' => 100
+                ],
+                [
+                    'idzone' => 2,
+                    'nomzone' => 'VIP',
+                    'tarif' => $evenement->prixbase * 1.5,
+                    'couleur' => '#ADD8E6',
+                    'capacite' => 50,
+                    'places_disponibles' => 50
+                ],
+                [
+                    'idzone' => 3,
+                    'nomzone' => 'Premium',
+                    'tarif' => $evenement->prixbase * 2,
+                    'couleur' => '#FFD700',
+                    'capacite' => 20,
+                    'places_disponibles' => 20
+                ]
+            ];
 
-        // Récupérer toutes les zones tarifaires disponibles
-        // Si vos zones sont liées à un lieu et vos événements ont un idLieu, vous pouvez filtrer:
-        $zones = ZoneTarifaire::where('idlieu', $evenement->idlieu)->get();
-        // Sinon, si les zones sont génériques:
-        //$zones = ZoneTarifaire::all();
-
+        } else {
+            // Calculer les places disponibles pour chaque zone
+            $zones = $zones->map(function ($zone) {
+                $billetsVendus = Billet::where('idzone', $zone->idzone)->count();
+                $zone->places_disponibles = $zone->capacite - $billetsVendus;
+                return $zone;
+            });
+        }
         return Inertia::render('Reservation/CategorySelection', [
             'evenement' => [
-                'id' => $evenement->idevenement, 
+                'idevenement' => $evenement->idevenement,
                 'titre' => $evenement->titre,
-                // Ajoutez d'autres infos de l'événement si nécessaire pour la page de réservation
+                'image' => $evenement->bandeannonce ? asset('storage/events-photos/' . $evenement->bandeannonce) : null,
+                'prix' => $evenement->prixbase,
+                'type_placement' => $evenement->typeplacement,
+                'date_id' => $prochainDate->iddate
             ],
-            'zones' => $zones->map(function ($zone) {
-                return [
-                    'idZone' => $zone->idzone,
-                    'nomZone' => $zone->nomzone,
-                    'tarif' => $zone->tarif,
-                    'capacite' => $zone->capacite,
-                    'couleur' => $zone->couleur,
-                ];
-            }), // Passe les catégories à la vue
+            'zones' => $zones,
+            'canLogin' => route('login'),
+            'canRegister' => route('register.participant')
         ]);
+        
         }
-        elseif ($evenement->type_placement == 'Numéroté') {
+        elseif ($evenement->typeplacement == 'Numéroté') {
             // Rediriger vers la page de réservation numérotée
-            return redirect()->route('evenement.show', $evenement)->with('error', 'Cet événement n\'est pas en placement libre.');
         }
     }
 
     /**
-     * Gère la soumission d'une réservation (qu'elle soit libre ou numérotée).
+     * Enregistre une nouvelle réservation
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
@@ -64,88 +123,89 @@ class ReservationController extends Controller
     {
         // Valider les données reçues
         $request->validate([
-            'evenement_id' => ['required', 'exists:evenements,idevenement'], // Assurez-vous que 'evenements' est le nom de votre table
-            'type' => ['required', 'in:Libre,Numéroté'],
-            'tickets' => ['array', 'required_if:type,Libre'], // Pour placement libre
-            'tickets.*.zone_id' => ['required_if:type,Libre', 'integer'],
-            'tickets.*.quantity' => ['required_if:type,Libre', 'integer', 'min:0'], // La quantité peut être 0 au début
-
-            'selected_seats' => ['array', 'required_if:type,Numéroté'], // Pour placement numéroté
-            'selected_seats.*' => ['integer'],
-            'total_price' => ['required_if:type,Numéroté', 'numeric', 'min:0'],
+            'evenement_id' => 'required|exists:evenements,idevenement',
+            'date_id' => 'required|exists:date_evenements,iddate',
+            'tickets' => 'required|array',
+            'tickets.*.zone_id' => 'required|integer|exists:zone_tarifaire,idzone',
+            'tickets.*.quantity' => 'required|integer|min:0',
+            'type' => 'required|in:Libre,Numéroté'
         ]);
+// Filtrer les tickets avec une quantité > 0
+        $ticketsToSave = array_filter($request->tickets, function($ticket) {
+            return $ticket['quantity'] > 0;
+        });
 
-        $evenement = Event::find($request->evenement_id);
-
-
-        if (!$evenement) {
-            return back()->with('error', 'Événement introuvable.');
+        if (empty($ticketsToSave)) {
+            return back()->withErrors(['tickets' => 'Vous devez sélectionner au moins un ticket.']);
         }
 
-        if ($request->type === 'Libre') {
-            $totalTickets = 0;
-            foreach ($request->tickets as $ticketData) {
-                $totalTickets += $ticketData['quantity'];
-            }
-
-            if ($totalTickets === 0) {
-                return back()->with('error', 'Veuillez sélectionner au moins un ticket.');
-            }
+        // Vérifier si l'utilisateur est connecté et récupérer le participant
+        $participant = null;
+        if (Auth::check()) {
+            $participant = Participant::where('user_id', Auth::id())->first();
             
-            // Créer une seule réservation pour l'ensemble des tickets achetés en placement libre
-            // Vous pouvez choisir l'état initial (par exemple 'pending', 'paid', etc.)
-             $reservation = Reservation::create([
-                'datereservation' => now(),
-                'etat' => 'pending', // Ou 'confirmed' si le paiement est géré ailleurs
-                'idParitcipant' => 1 , // L'utilisateur connecté
-            ]);
-
-                foreach ($request->tickets as $ticketData) {
-                $zone = ZoneTarifaire::find($ticketData['zone_id']);
-
-                if ($zone && $ticketData['quantity'] > 0) {
-                    // Vérifier la capacité restante de la zone (simple, sans gestion concurrence)
-                    // Il faudrait une logique plus robuste pour la capacité réelle (billets vendus vs capacité zone)
-                    // For now, let's assume capacity management is handled at a higher level or for physical seats only.
-
-                    for ($i = 0; $i < $ticketData['quantity']; $i++) {
-                        Billet::create([
-                            'idevenement' => $evenement->idevenement,
-                            'idreservation' => $reservation->idreservation,
-                            'idzone' => $zone->idZone, // Lier le billet à la zone tarifaire
-                            'estscanne' => false,
-                            'QRcode' => 'QR-'.Str::random(10).'-'.$evenement->idevenement.'-'.$zone->idZone, // Code QR unique
-                            // Si vous avez un modèle Participant, vous devrez le gérer ici
-                            // 'idParticipant' => null, // À définir après si l'utilisateur est le participant
-                        ]);
-                    }
-                }
+            if (!$participant) {
+                // Créer un participant si nécessaire
+                $participant = new Participant();
+                $participant->user_id = Auth::id();
+                $participant->save();
             }
-
-            return redirect()->route('dashboard')->with('success', 'Réservation de place libre effectuée avec succès ! Vous pouvez retrouver vos billets dans votre espace personnel.');
-
-        } elseif ($request->type === 'Numéroté') {
-            // Logique de réservation pour le placement numéroté
-            // Ici, vous enregistreriez les sièges spécifiques sélectionnés en base de données
-            // et marqueriez ces sièges comme réservés.
-            // Exemple très simplifié :
-            // foreach ($request->selected_seats as $seatNumber) {
-            //     Seat::where('evenement_id', $evenement->idevenement)->where('seat_number', $seatNumber)->update(['is_booked' => true]);
-            // }
-            // Reservation::create([
-            //     'evenement_id' => $evenement->idevenement,
-            //     'selected_seats' => json_encode($request->selected_seats), // Stocker les sièges comme JSON
-            //     'total_price' => $request->total_price,
-            //     'user_id' => auth()->id(),
-            //     'type' => 'numerote',
-            // ]);
-            echo "Réservation numérotée: " . implode(', ', $request->selected_seats) . " pour {$evenement->titre}<br>";
-
-            // Rediriger vers une page de succès
-            return redirect()->route('dashboard')->with('success', 'Réservation de sièges numérotés effectuée avec succès !');
+        } else {
+            // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+            return redirect()->route('login')->with('message', 'Veuillez vous connecter pour réserver des billets.');
         }
 
-        return back()->with('error', 'Type de placement non valide.');
+        // Commencer une transaction pour garantir l'intégrité des données
+        DB::beginTransaction();
+
+        try {
+            // Créer la réservation
+            $reservation = new Reservation();
+            $reservation->idparticipant = $participant->idparticipant;
+            $reservation->datereservation = now();
+            $reservation->etat = 'en attente';
+            $reservation->save();
+
+            // Récupérer l'événement et la date
+            $evenement = Event::findOrFail($request->evenement_id);
+            $dateEvenement = DateEvenement::findOrFail($request->date_id);
+
+            // Créer les billets pour chaque zone
+            foreach ($ticketsToSave as $ticket) {
+                $zone = ZoneTarifaire::findOrFail($ticket['zone_id']);
+                
+                // Vérifier la disponibilité
+                $billetsVendus = Billet::where('idzone', $zone->idzone)->count();
+                $placesDisponibles = $zone->capacite - $billetsVendus;
+                
+                if ($placesDisponibles < $ticket['quantity']) {
+                    throw new \Exception("Plus assez de places disponibles dans la zone {$zone->nomzone}.");
+                }
+                
+                // Créer les billets individuels
+                for ($i = 0; $i < $ticket['quantity']; $i++) {
+                    $billet = new Billet();
+                    $billet->idevenement = $evenement->idevenement;
+                    $billet->idzone = $zone->idzone;
+                    $billet->idparticipant = $participant->idParticipant;
+                    $billet->idreservation = $reservation->idreservation;
+                    $billet->estscanne = false;
+                    $billet->QRcode = Billet::generateQRCode();
+                    $billet->save();
+                }
+                
+                // Mettre à jour le nombre de places vendues pour la date
+                $dateEvenement->placesvendues += $ticket['quantity'];
+                $dateEvenement->save();
+            }
+
+            DB::commit();
+
+            // Rediriger vers la page de paiement
+            return redirect()->route('payment.create', $reservation->idreservation);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }
-
