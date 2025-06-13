@@ -3,15 +3,20 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\Admin\OrganisateurController;
-use App\Http\Controllers\Admin\EvenementController;
-use App\Http\Controllers\Admin\StatistiqueController;
+
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Organisateur\DashboardController as OrganisateurDashboardController; // Make sure you've renamed the file AND the class inside
+use App\Http\Controllers\Admin\OrganisateurController;
+use App\Http\Controllers\Admin\EvenementController as AdminEvenementController;
+use App\Http\Controllers\Admin\StatistiqueController;
+
+use App\Http\Controllers\Organisateur\DashboardController as OrganisateurDashboardController;
+use App\Http\Controllers\Organisateur\EvenementController as OrganisateurEvenementController;
+
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ReservationController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
-use App\Models\Event;
+
+use App\Models\Evenement;
 use Carbon\Carbon;
 
 // --- Routes accessibles UNIQUEMENT aux utilisateurs non connectés (Guest) ---
@@ -32,7 +37,7 @@ Route::middleware('guest')->group(function () {
 // --- Route d'accueil publique (accessible à tous) ---
 Route::get('/', function () {
     // Récupérer les événements à venir (estValide = true)
-    $upcomingEvents = Event::where('estValide', true)
+    $upcomingEvents = Evenement::where('estValide', true)
         ->with(['dates' => function($query) {
             $query->where('dateDebut', '>=', Carbon::today())
                   ->orderBy('dateDebut', 'asc');
@@ -64,6 +69,7 @@ Route::get('/', function () {
     ]);
 });
 
+//--- Pages publiques ---
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/evenement/{event}', [EventController::class, 'show'])->name('evenement.show');
 
@@ -101,33 +107,35 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    //dashboard admin
-    Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])
-    ->prefix('admin')->name('admin.')->middleware('admin')
-    ->group(function () {
+    // --- Zone Admin ---
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
+        // Organisateurs
         Route::get('/organisateurs', [OrganisateurController::class, 'index'])->name('organisateurs.index');
         Route::post('/organisateurs/{id}/valider', [OrganisateurController::class, 'valider'])->name('organisateurs.valider');
         Route::post('/organisateurs/{id}/suspendre', [OrganisateurController::class, 'suspendre'])->name('organisateurs.suspendre');
         Route::post('/organisateurs/{id}/reactiver', [OrganisateurController::class, 'reactiver'])->name('organisateurs.reactiver');
 
-        Route::get('/evenements', [EvenementController::class, 'index'])->name('evenements.index');
-        Route::post('/evenements/{id}/valider', [EvenementController::class, 'valider'])->name('evenements.valider');
-        Route::post('/evenements/{id}/refuser', [EvenementController::class, 'refuser'])->name('evenements.refuser');
+        // Événements
+        Route::get('/evenements', [AdminEvenementController::class, 'index'])->name('evenements.index');
+        Route::post('/evenements/{id}/valider', [AdminEvenementController::class, 'valider'])->name('evenements.valider');
+        Route::post('/evenements/{id}/refuser', [AdminEvenementController::class, 'refuser'])->name('evenements.refuser');
 
+        // Statistiques
         Route::get('/statistiques', [StatistiqueController::class, 'index'])->name('statistiques.index');
-
-        Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
     });
 
-    /*Route::middleware('admin')->prefix('admin')->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-        // Ajoutez ici d'autres routes spécifiques aux administrateurs (ex: /admin/users, /admin/settings)
-    });*/
+    // --- Zone Organisateur ---
+    Route::middleware('organisateur')->prefix('organisateur')->name('organisateur.')->group(function () {
+        Route::get('/dashboard', [OrganisateurDashboardController::class, 'index'])->name('dashboard');
 
-    Route::middleware('organisateur')->prefix('organisateur')->group(function () {
-        Route::get('/dashboard', [OrganisateurDashboardController::class, 'index'])->name('organisateur.dashboard');
-        // ... more organisateur specific routes ...
+        // Gestion événements
+        Route::get('/evenements/create', [OrganisateurEvenementController::class, 'create'])->name('evenements.create');
+        Route::post('/evenements', [OrganisateurEvenementController::class, 'store'])->name('evenements.store');
+        Route::get('/evenements', [OrganisateurEvenementController::class, 'index'])->name('evenements.index');
+        Route::get('/evenements/{id}/edit', [OrganisateurEvenementController::class, 'edit'])->name('evenements.edit');
+        Route::put('/evenements/{id}', [OrganisateurEvenementController::class, 'update'])->name('evenements.update');
+        Route::delete('/evenements/{id}', [OrganisateurEvenementController::class, 'destroy'])->name('evenements.destroy');
     });
 });

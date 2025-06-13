@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Event;
+use App\Models\Evenement;
 use Illuminate\Support\Facades\Route;
 use Carbon\Carbon;
 
@@ -14,7 +14,7 @@ class AccueilController extends Controller
     //
     public function index()
     {
-        $upcomingEvents = Event::where('estValide', true)
+        $upcomingEvents = Evenement::where('estvalide', true)
             ->with(['dates' => function($query) {
                 $query->where('dateDebut', '>=', Carbon::today())
                     ->orderBy('dateDebut', 'asc');

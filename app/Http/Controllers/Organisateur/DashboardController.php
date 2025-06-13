@@ -19,5 +19,7 @@ class DashboardController extends Controller
             'message' => 'Bienvenue, Organisateur ! Vous êtes connecté en tant qu\'organisateur.',
             // Par exemple: 'usersCount' => \App\Models\User::count(),
         ]);
+
+        //return view('organisateur.dashboard');
     }
 };

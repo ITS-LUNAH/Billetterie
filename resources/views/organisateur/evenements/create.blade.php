@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un événement</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Créer un événement</h1>
+
+    @if(session('error'))
+        <div class="bg-red-200 text-red-800 p-2 mb-4 rounded">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('organisateur.evenements.store') }}" enctype="multipart/form-data">
+        @csrf
+
+        <div class="mb-4">
+            <label for="titre" class="block font-semibold">Titre :</label>
+            <input type="text" id="titre" name="titre" class="w-full border px-3 py-2 rounded" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="description" class="block font-semibold">Description :</label>
+            <textarea id="description" name="description" class="w-full border px-3 py-2 rounded"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="lieu" class="block font-semibold">Lieu :</label>
+            <input type="text" id="lieu" name="lieu" class="w-full border px-3 py-2 rounded" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="bandeAnnonce" class="block font-semibold">Bande Annonce (Image) :</label>
+            <input type="file" id="bandeAnnonce" name="bandeAnnonce" accept="image/*" class="w-full border px-3 py-2 rounded">
+        </div>
+
+        <div class="mb-4">
+            <label for="typePlacement" class="block font-semibold">Type de placement :</label>
+            <select id="typePlacement" name="typePlacement" class="w-full border px-3 py-2 rounded" required>
+                <option value="libre">Libre</option>
+                <option value="numéroté">Numéroté</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="prixBase" class="block font-semibold">Prix de base :</label>
+            <input type="number" step="0.01" id="prixBase" name="prixBase" class="w-full border px-3 py-2 rounded">
+        </div>
+
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Créer
+        </button>
+    </form>
+</div>
+</body>
+</html>

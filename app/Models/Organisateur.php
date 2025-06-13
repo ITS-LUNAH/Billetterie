@@ -21,7 +21,8 @@ class Organisateur extends Model
         'ICE',
         'nomGerant',
         'prenomGerant',
-        //'estActif',
+        'estActif',
+        'estValide',
     ];
 
     public function user()

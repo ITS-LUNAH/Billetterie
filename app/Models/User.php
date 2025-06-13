@@ -77,7 +77,7 @@ class User extends Authenticatable
 
    public function organisateur()
 {
-    return $this->hasOne(Organisateur::class);
+    return $this->hasOne(Organisateur::class, 'user_id');
 }
 
     public function participant()
