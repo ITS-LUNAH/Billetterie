@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Billet;
 use App\Models\Reservation;
-use App\Models\Evenement;
+use App\Models\Event;
 use App\Models\ZoneTarifaire;
 // use Inertia\Inertia; // Commenté car on utilise des vues Blade
 use Illuminate\Support\Facades\DB;
@@ -27,7 +27,7 @@ class StatistiqueController extends Controller
             // $revenuTotal = Billet::sum('prix');
 
             // Statistiques par événement avec jointures pour calculer le revenu
-            $statsParEvenement = Evenement::select([
+            $statsParEvenement = Event::select([
                     'evenements.idevenement',
                     'evenements.titre',
                     DB::raw('COUNT(billets.idbillet) as billets_count'),
@@ -54,7 +54,7 @@ class StatistiqueController extends Controller
                 ->get();
 
             // Top 5 des événements les plus populaires - Fixed column name inconsistency
-            $topEvenements = Evenement::select([
+            $topEvenements = Event::select([
                     'evenements.idevenement',
                     'evenements.titre',
                     DB::raw('COUNT(billets.idbillet) as total_billets')

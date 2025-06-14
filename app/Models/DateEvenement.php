@@ -22,9 +22,12 @@ class DateEvenement extends Model
         'idevenement',
         'idlieu'
     ];
-
     protected $casts = [
-        'datedebut' => 'datetime', 
+        'datedebut' => 'datetime',
+        'heuredebut' => 'datetime:H:i',
+        'heureouvertureportes' => 'datetime:H:i',
+        'placesdisponibles' => 'integer',
+        'placesvendues' => 'integer'
     ];
     
     // Relationship to Event
@@ -39,4 +42,9 @@ class DateEvenement extends Model
         return $this->belongsTo(LieuEvenement::class, 'idlieu', 'idlieu');
     }
 
+    public function getPlacesRestantesAttribute()
+    {
+        return $this->placesdisponibles - $this->placesvendues;
+    }
+    
 }

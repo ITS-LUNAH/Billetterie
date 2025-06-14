@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Organisateur;
 
 use App\Http\Controllers\Controller;
-use App\Models\Evenement;
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +14,7 @@ class EvenementController extends Controller
     {
         $idOrganisateur = auth()->user()->organisateur->idOrganisateur ?? null;
         
-        $evenements = \App\Models\Evenement::where('idOrganisateur', $idOrganisateur)->latest()->get();
+        $evenements = \App\Models\Event::where('idOrganisateur', $idOrganisateur)->latest()->get();
         
         return view('organisateur.evenements.index', compact('evenements'));
     }
@@ -70,7 +70,7 @@ class EvenementController extends Controller
         ];
 
         try {
-            $evenement = Evenement::create($eventData);
+            $evenement = Event::create($eventData);
             return redirect()->route('organisateur.evenements.index')->with('success', 'Événement créé avec succès.');
             
         } catch (\Exception $e) {
@@ -80,7 +80,7 @@ class EvenementController extends Controller
 
     public function edit($id)
     {
-        $evenement = Evenement::where('idevenement', $id)
+        $evenement = Event::where('idevenement', $id)
                               ->where('idOrganisateur', auth()->user()->organisateur->idOrganisateur)
                               ->firstOrFail();
         
@@ -89,7 +89,7 @@ class EvenementController extends Controller
 
     public function update(Request $request, $id)
     {
-        $evenement = Evenement::where('idevenement', $id)
+        $evenement = Event::where('idevenement', $id)
                               ->where('idOrganisateur', auth()->user()->organisateur->idOrganisateur)
                               ->firstOrFail();
 
@@ -143,7 +143,7 @@ class EvenementController extends Controller
 
     public function destroy($id)
     {
-        $evenement = Evenement::where('idevenement', $id)
+        $evenement = Event::where('idevenement', $id)
                               ->where('idOrganisateur', auth()->user()->organisateur->idOrganisateur)
                               ->firstOrFail();
 

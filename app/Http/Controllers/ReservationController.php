@@ -6,8 +6,11 @@ use App\Models\Evenement;
 use App\Models\Category; // Si vous avez un modèle pour les catégories de billets
 use App\Models\Reservation;
 use App\Models\Billet;
+use App\Models\Reservation;
+use App\Models\Billet;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 use Illuminate\Support\Str;
 
 class ReservationController extends Controller
@@ -20,8 +23,18 @@ class ReservationController extends Controller
      * @return \Inertia\Response
      */
     
+    public function createCategorySelection(Event $evenement)
+    
     public function createCategorySelection(Evenement $evenement)
     {
+        if ($evenement->type_placement == 'Libre') {
+        
+
+        // Récupérer toutes les zones tarifaires disponibles
+        // Si vos zones sont liées à un lieu et vos événements ont un idLieu, vous pouvez filtrer:
+        $zones = ZoneTarifaire::where('idlieu', $evenement->idlieu)->get();
+        // Sinon, si les zones sont génériques:
+        //$zones = ZoneTarifaire::all();
         if ($evenement->type_placement == 'Libre') {
         
 
@@ -46,7 +59,21 @@ class ReservationController extends Controller
                     'couleur' => $zone->couleur,
                 ];
             }), // Passe les catégories à la vue
+            'zones' => $zones->map(function ($zone) {
+                return [
+                    'idZone' => $zone->idzone,
+                    'nomZone' => $zone->nomzone,
+                    'tarif' => $zone->tarif,
+                    'capacite' => $zone->capacite,
+                    'couleur' => $zone->couleur,
+                ];
+            }), // Passe les catégories à la vue
         ]);
+        }
+        elseif ($evenement->type_placement == 'Numéroté') {
+            // Rediriger vers la page de réservation numérotée
+            return redirect()->route('evenement.show', $evenement)->with('error', 'Cet événement n\'est pas en placement libre.');
+        }
         }
         elseif ($evenement->type_placement == 'Numéroté') {
             // Rediriger vers la page de réservation numérotée
@@ -71,7 +98,9 @@ class ReservationController extends Controller
             'tickets.*.quantity' => ['required_if:type,Libre', 'integer', 'min:0'], // La quantité peut être 0 au début
 
             'selected_seats' => ['array', 'required_if:type,Numéroté'], // Pour placement numéroté
+            'selected_seats' => ['array', 'required_if:type,Numéroté'], // Pour placement numéroté
             'selected_seats.*' => ['integer'],
+            'total_price' => ['required_if:type,Numéroté', 'numeric', 'min:0'],
             'total_price' => ['required_if:type,Numéroté', 'numeric', 'min:0'],
         ]);
 
@@ -88,6 +117,22 @@ class ReservationController extends Controller
                 $totalTickets += $ticketData['quantity'];
             }
 
+
+        if (!$evenement) {
+            return back()->with('error', 'Événement introuvable.');
+        }
+
+
+        if (!$evenement) {
+            return back()->with('error', 'Événement introuvable.');
+        }
+
+        if ($request->type === 'Libre') {
+            $totalTickets = 0;
+            $totalTickets = 0;
+            foreach ($request->tickets as $ticketData) {
+                $totalTickets += $ticketData['quantity'];
+            }
             if ($totalTickets === 0) {
                 return back()->with('error', 'Veuillez sélectionner au moins un ticket.');
             }
@@ -118,12 +163,25 @@ class ReservationController extends Controller
                             // Si vous avez un modèle Participant, vous devrez le gérer ici
                             // 'idParticipant' => null, // À définir après si l'utilisateur est le participant
                         ]);
+                    for ($i = 0; $i < $ticketData['quantity']; $i++) {
+                        Billet::create([
+                            'idevenement' => $evenement->idevenement,
+                            'idreservation' => $reservation->idreservation,
+                            'idzone' => $zone->idZone, // Lier le billet à la zone tarifaire
+                            'estscanne' => false,
+                            'QRcode' => 'QR-'.Str::random(10).'-'.$evenement->idevenement.'-'.$zone->idZone, // Code QR unique
+                            // Si vous avez un modèle Participant, vous devrez le gérer ici
+                            // 'idParticipant' => null, // À définir après si l'utilisateur est le participant
+                        ]);
                     }
                 }
             }
 
             return redirect()->route('dashboard')->with('success', 'Réservation de place libre effectuée avec succès ! Vous pouvez retrouver vos billets dans votre espace personnel.');
 
+            return redirect()->route('dashboard')->with('success', 'Réservation de place libre effectuée avec succès ! Vous pouvez retrouver vos billets dans votre espace personnel.');
+
+        } elseif ($request->type === 'Numéroté') {
         } elseif ($request->type === 'Numéroté') {
             // Logique de réservation pour le placement numéroté
             // Ici, vous enregistreriez les sièges spécifiques sélectionnés en base de données

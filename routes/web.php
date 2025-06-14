@@ -16,7 +16,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ReservationController;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
-use App\Models\Evenement;
+use App\Models\Event;
 use Carbon\Carbon;
 
 // --- Routes accessibles UNIQUEMENT aux utilisateurs non connectés (Guest) ---
@@ -27,17 +27,24 @@ Route::middleware('guest')->group(function () {
     })->name('register.participant');
 
     Route::get('/register/organisateur', function () {
-        return Inertia::render('Auth/Register', ['userTypeProp' => 'Organisateur']);
+        return Inertia::
+        render('Auth/Register', ['userTypeProp' => 'Organisateur']);
     })->name('register.organisateur');
 
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 
    });
 
+   Route::get('/test', function () {
+    return Inertia::render('test', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),]);
+   });
+
 // --- Route d'accueil publique (accessible à tous) ---
 Route::get('/', function () {
     // Récupérer les événements à venir (estValide = true)
-    $upcomingEvents = Evenement::where('estValide', true)
+    $upcomingEvents = Event::where('estValide', true)
         ->with(['dates' => function($query) {
             $query->where('dateDebut', '>=', Carbon::today())
                   ->orderBy('dateDebut', 'asc');
@@ -79,6 +86,8 @@ Route::get('/reservation/{evenement}/categories', [ReservationController::class,
 
 // Route pour soumettre les réservations (utilisée par les deux types de placement)
 Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
+
+
 
 
 // --- Routes accessibles UNIQUEMENT aux utilisateurs connectés (Authentifiés) ---
@@ -124,6 +133,10 @@ Route::middleware([
 
         // Statistiques
         Route::get('/statistiques', [StatistiqueController::class, 'index'])->name('statistiques.index');
+
+        // Participants
+        Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
+        
     });
 
     // --- Zone Organisateur ---
@@ -138,4 +151,5 @@ Route::middleware([
         Route::put('/evenements/{id}', [OrganisateurEvenementController::class, 'update'])->name('evenements.update');
         Route::delete('/evenements/{id}', [OrganisateurEvenementController::class, 'destroy'])->name('evenements.destroy');
     });
+    
 });

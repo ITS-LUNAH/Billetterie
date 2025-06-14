@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\DateEvenement;
 use App\Models\LieuEvenement;
-use App\Models\Evenement;
+
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -24,7 +25,7 @@ class EventController extends Controller
     $location = $request->get('location');
     $date = $request->get('date');
 
-    $events = Evenement::with(['dates.lieu', 'organisateur'])
+    $events = Event::with(['dates.lieu', 'organisateur'])
         ->search($search, $location, $date)
         ->orderBy('created_at', 'desc')
         ->paginate(12)
@@ -81,7 +82,7 @@ public function search(Request $request)
      * @param  \App\Models\Event  $event // Laravel va injecter le modèle Event
      * @return \Inertia\Response
      */
-    public function show(Evenement $event) 
+    public function show(Event $event) 
     {
         // Charger les relations nécessaires (par exemple, les dates et le lieu)
         $event->load('dates.lieu');
