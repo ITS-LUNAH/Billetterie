@@ -9,8 +9,10 @@ class ZoneTarifaire extends Model
 {
     //
     use HasFactory;
-    protected $table = 'zone_tarifaire'; // Nom de la table associée
-    protected $primaryKey = 'idzone'; // Clé primaire de la table
+
+    protected $table = 'zone_tarifaire'; 
+    protected $primaryKey = 'idzone'; 
+    
     protected $fillable = [
         'nomzone',
         'tarif',
@@ -18,17 +20,27 @@ class ZoneTarifaire extends Model
         'couleur',
         'idlieu',
     ];
+    protected $casts = [
+        'tarif' => 'float',
+        'capacite' => 'integer'
+    ];
 
+    // Relation avec le Lieu (si la zone est spécifique à un lieu)
+    public function lieu()
+    {
+        return $this->belongsTo(LieuEvenement::class, 'idlieu', 'idlieu');
+    }
     // Relation avec les Billets (une zone peut avoir plusieurs billets associés)
     public function billets()
     {
         return $this->hasMany(Billet::class, 'idzone', 'idzone');
     }
 
-    // Relation avec le Lieu (si la zone est spécifique à un lieu)
-    public function lieu()
+    // Méthode pour obtenir les places disponibles
+    public function getPlacesDisponiblesAttribute()
     {
-        return $this->belongsTo(Lieu::class, 'idlieu', 'idlieu');
+        $billetsVendus = $this->billets()->count();
+        return $this->capacite - $billetsVendus;
     }
 
 }

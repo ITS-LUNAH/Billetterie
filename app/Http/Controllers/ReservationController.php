@@ -8,16 +8,21 @@ use App\Models\Reservation;
 use App\Models\Billet;
 use App\Models\Reservation;
 use App\Models\Billet;
+use App\Models\ZoneTarifaire;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Str;
+use App\Models\Participant;
+use App\Models\DateEvenement;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
 {
     //
     /**
-     * Affiche la page de sélection de catégorie pour un événement en placement libre.
+     * Affiche la page de sélection de catégorie pour un événement
      *
      * @param \App\Models\Evenement $evenement
      * @return \Inertia\Response
@@ -46,7 +51,7 @@ class ReservationController extends Controller
 
         return Inertia::render('Reservation/CategorySelection', [
             'evenement' => [
-                'id' => $evenement->idevenement, 
+                'idevenement' => $evenement->idevenement,
                 'titre' => $evenement->titre,
                 // Ajoutez d'autres infos de l'événement si nécessaire pour la page de réservation
             ],
@@ -82,7 +87,7 @@ class ReservationController extends Controller
     }
 
     /**
-     * Gère la soumission d'une réservation (qu'elle soit libre ou numérotée).
+     * Enregistre une nouvelle réservation
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse

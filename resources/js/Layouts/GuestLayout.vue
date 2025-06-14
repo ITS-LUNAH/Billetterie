@@ -33,6 +33,89 @@ onMounted(() => {
             bubble.style.transform = `translateY(${scrollY * speed}px)`;
         });
     });
+
+      // Variables pour le curseur
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+
+  // Éléments du curseur
+  const cursor = document.querySelector('.cursor');
+  const cursorGlow = document.querySelector('.cursor-glow');
+
+  if (cursor && cursorGlow) {
+    // Initialiser le curseur au centre
+    cursor.style.left = `${mouseX}px`;
+    cursor.style.top = `${mouseY}px`;
+    cursorGlow.style.left = `${mouseX}px`;
+    cursorGlow.style.top = `${mouseY}px`;
+
+    // Suivi du curseur
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      // Déplacer le curseur lumineux
+      cursor.style.left = `${mouseX}px`;
+      cursor.style.top = `${mouseY}px`;
+      
+      cursorGlow.style.left = `${mouseX}px`;
+      cursorGlow.style.top = `${mouseY}px`;
+    });
+
+    // Effet de clic
+    document.addEventListener('mousedown', () => {
+      cursor.style.width = '15px';
+      cursor.style.height = '15px';
+      
+      // Effet d'onde lors du clic
+      const clickWave = document.createElement('div');
+      clickWave.style.position = 'fixed';
+      clickWave.style.left = `${mouseX}px`;
+      clickWave.style.top = `${mouseY}px`;
+      clickWave.style.width = '10px';
+      clickWave.style.height = '10px';
+      clickWave.style.borderRadius = '50%';
+      clickWave.style.backgroundColor = '#F5DDDD';
+      clickWave.style.transform = 'translate(-50%, -50%)';
+      clickWave.style.zIndex = '9997';
+      clickWave.style.pointerEvents = 'none';
+      clickWave.style.transition = 'all 0.5s ease-out';
+      
+      document.body.appendChild(clickWave);
+      
+      setTimeout(() => {
+        clickWave.style.width = '200px';
+        clickWave.style.height = '200px';
+        clickWave.style.opacity = '0';
+      }, 10);
+      
+      setTimeout(() => {
+        clickWave.remove();
+      }, 500);
+    });
+
+    document.addEventListener('mouseup', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+    });
+
+    // Effet sur les éléments interactifs
+    const interactiveElements = document.querySelectorAll('button, a');
+    interactiveElements.forEach(element => {
+      element.addEventListener('mouseenter', () => {
+        cursor.style.width = '30px';
+        cursor.style.height = '30px';
+        cursor.style.backgroundColor = '#F5DDDD';
+      });
+      
+      element.addEventListener('mouseleave', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        cursor.style.backgroundColor = '#F5DDDD';
+      });
+    });
+  }
+
 });
 
 // Fonction pour créer les tickets et bulles dynamiquement
@@ -145,12 +228,56 @@ function createElements() {
             <Footer />
         </div>
     </div>
+    <!--Curseur lumineux-->
+    <div class="cursor"></div>
+    <div class="cursor-glow"></div>
 </template>
 
 <style>
+/* Styles pour le curseur */
+/* Curseur lumineux */
+body {
+  cursor: none; /* Cache le curseur par défaut */
+}
+
+.cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #F5DDDD;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  box-shadow: 0 0 20px 10px #dbb5b5;
+  transition: width 0.2s, height 0.2s;
+}
+
+.cursor-glow {
+  position: fixed;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #F5DDDD 0%, rgba(0, 255, 255, 0) 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9998;
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  100% { transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* Style pour les éléments interactifs */
+button, a {
+  cursor: none;
+}
 /* Styles pour le fond animé */
 #background {
-    background: linear-gradient(135deg, #67436e, #ac9699, #6B4E71);
+    background: linear-gradient(135deg, #6B4E71, #000000, #3A4454);
     background-size: 400% 400%;
     animation: gradientShift 15s ease infinite;
 }

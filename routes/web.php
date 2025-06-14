@@ -3,18 +3,23 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
+// Contrôleurs Admin
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrganisateurController;
 use App\Http\Controllers\Admin\EvenementController as AdminEvenementController;
 use App\Http\Controllers\Admin\StatistiqueController;
 
+// Contrôleurs Organisateur
 use App\Http\Controllers\Organisateur\DashboardController as OrganisateurDashboardController;
 use App\Http\Controllers\Organisateur\EvenementController as OrganisateurEvenementController;
 
+// Contrôleurs généraux
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ReservationController;
-use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ParticipantController;
 
 use App\Models\Event;
 use Carbon\Carbon;
@@ -80,9 +85,9 @@ Route::get('/', function () {
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
 Route::get('/evenement/{event}', [EventController::class, 'show'])->name('evenement.show');
 
-// Nouvelle route pour la sélection de catégorie pour les événements en placement libre
+/* // Nouvelle route pour la sélection de catégorie pour les événements en placement libre
 Route::get('/reservation/{evenement}/categories', [ReservationController::class, 'createCategorySelection'])
-     ->name('reservation.category.create');
+     ->name('reservation.category.create'); */
 
 // Route pour soumettre les réservations (utilisée par les deux types de placement)
 Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
@@ -153,3 +158,22 @@ Route::middleware([
     });
     
 });
+
+// Routes pour la réservation
+Route::get('/reservation/{evenement}/categories', [ReservationController::class, 'createCategorySelection'])
+     ->name('reservation.category.create');
+Route::post('/reservation', [ReservationController::class, 'store'])
+     ->name('reservation.store');
+
+// Routes pour le paiement
+Route::get('/payment/{reservation}', [PaymentController::class, 'create'])
+     ->name('payment.create');
+Route::post('/payment/{reservation}', [PaymentController::class, 'store'])
+     ->name('payment.store');
+
+// Route de confirmation (à implémenter plus tard)
+Route::get('/reservation/{reservation}/confirmation', function($reservation) {
+    return Inertia::render('Reservation/Confirmation', [
+        'reservation' => $reservation
+    ]);
+})->name('reservation.confirmation');

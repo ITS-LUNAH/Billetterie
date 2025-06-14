@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { computed, ref } from 'vue';
 
 // Définir les props que le contrôleur va passer
@@ -9,20 +9,22 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    // Ces catégories viendront de Laravel (par exemple de la BDD ou un tableau configuré)
      zones: {
         type: Array,
-        default: () => [], // S'attend à un tableau d'objets ZoneTarifaire
+        default: () => [], 
     },
+    canLogin: Boolean,
+    canRegister: Boolean,
 });
 
 // Formulaire Inertia pour envoyer les données
 const form = useForm({
     evenement_id: props.evenement.id,
-    tickets: props.zones.map(zone => ({ // <-- Correction ici: props.categories.map -> props.zones.map
-        zone_id: zone.idzone,          // <-- Correction ici: cat.id -> zone.idZone
-        zone_name: zone.nomzone,       // <-- Correction ici: cat.name -> zone.nomZone
-        price_per_ticket: zone.tarif,  // <-- Correction ici: cat.price -> zone.tarif
+    date_id: props.evenement.date_id, 
+    tickets: props.zones.map(zone => ({ 
+        zone_id: zone.idzone,          
+        zone_name: zone.nomzone,       
+        price_per_ticket: zone.tarif,  
         quantity: 0, // Initialisation de la quantité à 0
     })),
     type: 'Libre', // Pour indiquer le type de réservation
@@ -46,10 +48,11 @@ const submit = () => {
         alert('Veuillez sélectionner au moins un ticket.');
         return;
     }
-    form.post(route('reservation.store'), { // Cette route 'reservation.store' sera la même pour les deux types
+    form.post(route('reservation.store'), { // Cette route 'reservation.store' est la même pour les deux types
         onSuccess: () => {
             alert('Réservation soumise avec succès !');
-            // Vous pouvez rediriger vers une page de confirmation ou le tableau de bord
+            // Vous pouvez rediriger vers une page de payment ou de confirmation
+            // router.visit(route('payment')); // Par exemple, si vous avez une page de paiement
             // router.visit(route('dashboard'));
         },
         onError: (errors) => {
@@ -63,8 +66,17 @@ const submit = () => {
 <template>
     <Head :title="`Réserver pour ${evenement.titre}`" />
 
-    <MainLayout>
+    <GuestLayout :canLogin="canLogin" :canRegister="canRegister">
         <div class="container mx-auto px-4 py-8">
+            <div class="mb-6">
+                <Link :href="route('evenement.show', evenement.id)" class="text-blue-600 hover:underline flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour à l'événement
+                </Link>
+            </div>
+
             <h1 class="text-3xl font-bold text-gray-900 mb-6">
                 Réserver pour "{{ evenement.titre }}" (Placement libre)
             </h1>
@@ -74,21 +86,34 @@ const submit = () => {
 
                 <form @submit.prevent="submit">
                     <div class="space-y-6 mb-8">
-                        <div v-for="zone in form.tickets" :key="zone.zone_id"
+                        <div v-for="(ticket, index) in form.tickets" :key="index"
                              class="flex items-center justify-between border-b pb-4 last:border-b-0 last:pb-0">
                             <div>
-                                <h3 class="text-xl font-medium text-gray-800">{{ zone.zone_name }}</h3>
-                                <span :style="`background-color: ${zones.find(z => z.idzone === zone.zone_id)?.couleur}; display: inline-block; width: 15px; height: 15px; border-radius: 3px; margin-right: 5px;`"></span>
-                                <p class="text-lg font-semibold text-indigo-600">{{ zone.price_per_ticket.toFixed(2) }} MAD / ticket</p>
+                                <div class="flex items-center">
+                                    <span 
+                                        :style="`background-color: ${props.zones[index]?.couleur || '#ccc'}; display: inline-block; width: 15px; height: 15px; border-radius: 3px; margin-right: 8px;`"
+                                    ></span>
+                                    <h3 class="text-xl font-medium text-gray-800">{{ ticket.zone_name }}</h3>
+                                </div>
+                                <p class="text-lg font-semibold text-blue-600 mt-1">{{ ticket.price_per_ticket.toFixed(2) }} MAD / ticket</p>
+                                <p class="text-sm text-gray-500">
+                                    Places disponibles: {{ props.zones[index]?.places_disponibles || 'Non spécifié' }}
+                                </p>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <button type="button" @click="zone.quantity = Math.max(0, zone.quantity - 1)"
-                                        class="px-3 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors">
+                                <button 
+                                    type="button" 
+                                    @click="ticket.quantity = Math.max(0, ticket.quantity - 1)"
+                                    class="px-3 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                                >
                                     -
                                 </button>
-                                <span class="text-xl font-bold">{{ zone.quantity }}</span>
-                                <button type="button" @click="zone.quantity++"
-                                        class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+                                <span class="text-xl font-bold w-8 text-center">{{ ticket.quantity }}</span>
+                                <button 
+                                    type="button" 
+                                    @click="ticket.quantity = Math.min(props.zones[index]?.places_disponibles || 10, ticket.quantity + 1)"
+                                    class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                >
                                     +
                                 </button>
                             </div>
@@ -97,15 +122,23 @@ const submit = () => {
 
                     <div class="border-t pt-4 mt-4 flex justify-between items-center">
                         <span class="text-2xl font-bold text-gray-800">Total :</span>
-                        <span class="text-3xl font-bold text-indigo-700">{{ totalPrice }} MAD</span>
+                        <span class="text-3xl font-bold text-blue-700">{{ totalPrice }} MAD</span>
                     </div>
 
-                    <button type="submit"
-                            class="mt-8 w-full py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
-                        Confirmer la réservation ({{ totalQuantity }} ticket<span v-if="totalQuantity > 1">s</span>)
+                    <button 
+                        type="submit"
+                        :disabled="totalQuantity === 0"
+                        :class="[
+                            'mt-8 w-full py-3 font-semibold rounded-md transition-colors',
+                            totalQuantity > 0 
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ]"
+                    >
+                        Confirmer la réservation ({{ totalQuantity }} ticket<span v-if="totalQuantity !== 1">s</span>)
                     </button>
                 </form>
             </div>
         </div>
-    </MainLayout>
+    </GuestLayout>
 </template>

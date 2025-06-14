@@ -33,7 +33,7 @@ const handleSubmit = (e) => {
 </script>
 
 <template>
-  <div class="bg-white/50 rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+  <div class="bg-white/50 rounded-lg shadow-lg p-6 max-w-2xl mx-auto hover:shadow-xl">
     <h2 class="text-2xl font-bold text-gray-800 mb-6">Rechercher un événement</h2>
     
     <form @submit="handleSubmit" class="space-y-4">
@@ -87,7 +87,7 @@ const handleSubmit = (e) => {
       <!-- Bouton de recherche -->
       <button
         type="submit"
-        class="w-full hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        class="w-full hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-indigo-400 transition-colors"
         style="background-color: #6B4E71;"
       >
         Rechercher
