@@ -29,4 +29,14 @@ class Organisateur extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getNomCompletAttribute()
+    {
+        return $this->prenomGerant . ' ' . $this->nomGerant; // Concatène prenomGerant et nomGerant
+    }
+
+    public function evenements()
+    {
+        return $this->hasMany(Event::class, 'organisateur_id', 'idOrganisateur'); // 'organisateur_id' dans events, 'idOrganisateur' dans organisateurs
+    }
 }
