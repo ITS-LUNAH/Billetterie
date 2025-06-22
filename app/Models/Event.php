@@ -22,6 +22,7 @@ class Event extends Model
         'estvalide',
         'idorganisateur',
         'prixbase',
+        'estActif',
     ];
     protected $casts = [
         'estvalide' => 'boolean',
@@ -31,7 +32,7 @@ class Event extends Model
     // Relationship to Organisateur
     public function organisateur()
     {
-        return $this->belongsTo(Organisateur::class, 'user_id', 'idOrganisateur');
+        return $this->belongsTo(Organisateur::class, 'idOrganisateur', 'idOrganisateur');
     }
     // Relationship to DateEvenement (an event can have multiple dates/occurrences)
     public function dates()
@@ -81,4 +82,5 @@ class Event extends Model
                    ->orderBy('datedebut')
                    ->first();
     }
+
 }

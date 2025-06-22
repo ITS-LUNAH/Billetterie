@@ -22,11 +22,14 @@ class Participant extends Model
         'IBAN',
         'RIB',
         'user_id',
+        'nom',
+        'prenom',
+        'telephone',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
     // Relation avec les réservations
     public function reservations()
@@ -36,6 +39,6 @@ class Participant extends Model
     // Relation avec les billets
     public function billets()
     {
-        return $this->hasMany(Billet::class, 'idParticipant', 'idParticipant');
+        return $this->hasMany(Billet::class, 'idparticipant', 'idparticipant');
     }
 }

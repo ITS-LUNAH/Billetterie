@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'; // Ou AppLayout si vous n'avez pas de layout Admin spécifique
-import Welcome from '@/Components/Welcome.vue'; // Un composant d'exemple de Jetstream
+import Welcome from '@/components/Welcome.vue'; // Un composant d'exemple de Jetstream
 
 // Définissez les props que ce composant peut recevoir du contrôleur Laravel
 defineProps({

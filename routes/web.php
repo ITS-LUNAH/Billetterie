@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrganisateurController;
 use App\Http\Controllers\Admin\EvenementController as AdminEvenementController;
 use App\Http\Controllers\Admin\StatistiqueController;
+use App\Http\Controllers\Admin\ParticipantController;
+use App\Http\Controllers\Admin\CommissionController;
 
 // Contrôleurs Organisateur
 use App\Http\Controllers\Organisateur\DashboardController as OrganisateurDashboardController;
@@ -19,7 +21,6 @@ use App\Http\Controllers\Organisateur\EvenementController as OrganisateurEveneme
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ParticipantController;
 
 use App\Models\Event;
 use Carbon\Carbon;
@@ -123,24 +124,40 @@ Route::middleware([
 
     // --- Zone Admin ---
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', function () {
+            return view('admin.dashboard');
+        })->name('dashboard');
 
         // Organisateurs
         Route::get('/organisateurs', [OrganisateurController::class, 'index'])->name('organisateurs.index');
+        Route::resource('organisateurs', OrganisateurController::class)->except(['create', 'store', 'show']);
+        Route::post('/organisateurs/{id}/toggle-activation', [OrganisateurController::class, 'toggleActivation'])->name('admin.organisateurs.toggleActivation');
         Route::post('/organisateurs/{id}/valider', [OrganisateurController::class, 'valider'])->name('organisateurs.valider');
         Route::post('/organisateurs/{id}/suspendre', [OrganisateurController::class, 'suspendre'])->name('organisateurs.suspendre');
         Route::post('/organisateurs/{id}/reactiver', [OrganisateurController::class, 'reactiver'])->name('organisateurs.reactiver');
+        Route::post('/organisateurs/{id}/refuser', [OrganisateurController::class, 'refuser'])->name('organisateurs.refuser'); // New route for refusing validation
 
         // Événements
         Route::get('/evenements', [AdminEvenementController::class, 'index'])->name('evenements.index');
+        // Le 'show' est souvent omis si vous utilisez une modale pour les détails
+        Route::resource('evenements', App\Http\Controllers\Admin\EvenementController::class)->except(['show']);
         Route::post('/evenements/{id}/valider', [AdminEvenementController::class, 'valider'])->name('evenements.valider');
         Route::post('/evenements/{id}/refuser', [AdminEvenementController::class, 'refuser'])->name('evenements.refuser');
+        Route::post('evenements/{id}/toggle-activation', [App\Http\Controllers\Admin\EvenementController::class, 'toggleActivation'])->name('evenements.toggleActivation');
+
 
         // Statistiques
         Route::get('/statistiques', [StatistiqueController::class, 'index'])->name('statistiques.index');
 
         // Participants
+        Route::resource('participants', App\Http\Controllers\Admin\ParticipantController::class)->except(['create', 'store']);
         Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
+
+        // Commission
+        Route::get('/commissions', [CommissionController::class, 'index'])->name('commissions.index');
+        Route::get('/commissions/create', [CommissionController::class, 'create'])->name('commissions.create');
+        Route::post('/commissions', [CommissionController::class, 'store'])->name('commissions.store');
+        Route::delete('/commissions/{id}', [CommissionController::class, 'destroy'])->name('commissions.destroy');
         
     });
 
