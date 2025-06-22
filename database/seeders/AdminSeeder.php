@@ -23,7 +23,7 @@ class AdminSeeder extends Seeder
             'firstName' => 'Super',
             'lastName' => 'Admin',
             'email' => 'admin@gmail.com',
-            'password' => Hash::make('123456789'), // Always hash passwords for security!
+            'password' => Hash::make('123456789'), // passwords haché pour la securité!
         ]);
 
         Administrateur::create([

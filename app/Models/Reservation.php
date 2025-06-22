@@ -25,7 +25,7 @@ class Reservation extends Model
     //Relation avec le participant
     public function participant()
     {
-        return $this->belongsTo(Participant::class, 'idparticipant', 'idparticipant');
+        return $this->belongsTo(Participant::class, 'idparticipant', 'idParticipant');
     }
 
     //Relation avec les billets (une réservation peut avoir plusieurs billets)
@@ -33,6 +33,12 @@ class Reservation extends Model
     {
         return $this->hasMany(Billet::class, 'idreservation', 'idreservation');
     }
+
+    public function evenement()
+    {
+        return $this->belongsTo(Event::class, 'idevenement', 'idevenement'); // Assurez idevenement est correct
+    }
+
     // Méthode pour obtenir le montant total
     public function getMontantTotalAttribute()
     {

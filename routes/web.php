@@ -6,6 +6,8 @@ use Inertia\Inertia;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 // Contrôleurs Admin
+use App\Http\Controllers\Organisateur\OrganisateurController;
+use App\Http\Controllers\Admin\StatistiqueController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrganisateurController;
 use App\Http\Controllers\Admin\EvenementController as AdminEvenementController;
@@ -80,20 +82,18 @@ Route::get('/', function () {
         'upcomingEvents' => $upcomingEvents, // Passez les événements à la vue
 
     ]);
-});
+})->name('accueil');
+
 
 //--- Pages publiques ---
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::get('/evenement', [EventController::class, 'index'])->name('evenement.index');
+Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
 Route::get('/evenement/{event}', [EventController::class, 'show'])->name('evenement.show');
 
-/* // Nouvelle route pour la sélection de catégorie pour les événements en placement libre
+// Routes pour la réservation
 Route::get('/reservation/{evenement}/categories', [ReservationController::class, 'createCategorySelection'])
-     ->name('reservation.category.create'); */
-
-// Route pour soumettre les réservations (utilisée par les deux types de placement)
-Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
-
-
+     ->name('reservation.category.create');
 
 
 // --- Routes accessibles UNIQUEMENT aux utilisateurs connectés (Authentifiés) ---
@@ -173,24 +173,35 @@ Route::middleware([
         Route::put('/evenements/{id}', [OrganisateurEvenementController::class, 'update'])->name('evenements.update');
         Route::delete('/evenements/{id}', [OrganisateurEvenementController::class, 'destroy'])->name('evenements.destroy');
     });
+
+    // --- Routes de RESERVATION et PAIEMENT QUI NÉCESSITENT L'AUTHENTIFICATION ---
+    // La soumission de la réservation (POST) et toutes les routes de paiement
+    // devraient être derrière l'authentification.
+    Route::post('/reservation', [ReservationController::class, 'store'])
+        ->name('reservation.store');
+
+
+        // NOUVEAU : Routes pour les actions sur les billets d'une réservation
+    Route::post('/reservation/{reservation}/send-tickets', [ReservationController::class, 'sendTickets'])
+        ->name('reservation.send-tickets');
+    Route::get('/reservation/{reservation}/download-tickets', [ReservationController::class, 'downloadTicketsPdf'])
+        ->name('reservation.download-tickets');
+        
+    // Routes pour le paiement
+    Route::get('/payment/{reservation}', [PaymentController::class, 'create'])
+        ->name('payment.create');
+
+    Route::get('/payment/success/{reservation}', [PaymentController::class, 'success'])
+        ->name('payment.success');
+
+    Route::get('/payment/cancel/{reservation}', [PaymentController::class, 'cancel'])
+        ->name('payment.cancel');
+
+    // Route de confirmation
+    Route::get('/reservation/{reservation}/confirmation', function($reservation) {
+        return Inertia::render('Reservation/Confirmation', [
+            'reservation' => $reservation
+        ]);
+    })->name('reservation.confirmation');
     
 });
-
-// Routes pour la réservation
-Route::get('/reservation/{evenement}/categories', [ReservationController::class, 'createCategorySelection'])
-     ->name('reservation.category.create');
-Route::post('/reservation', [ReservationController::class, 'store'])
-     ->name('reservation.store');
-
-// Routes pour le paiement
-Route::get('/payment/{reservation}', [PaymentController::class, 'create'])
-     ->name('payment.create');
-Route::post('/payment/{reservation}', [PaymentController::class, 'store'])
-     ->name('payment.store');
-
-// Route de confirmation (à implémenter plus tard)
-Route::get('/reservation/{reservation}/confirmation', function($reservation) {
-    return Inertia::render('Reservation/Confirmation', [
-        'reservation' => $reservation
-    ]);
-})->name('reservation.confirmation');

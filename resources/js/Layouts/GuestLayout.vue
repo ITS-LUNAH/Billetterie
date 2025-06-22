@@ -237,7 +237,7 @@ function createElements() {
 /* Styles pour le curseur */
 /* Curseur lumineux */
 body {
-  cursor: none; /* Cache le curseur par défaut */
+  cursor: default; /* Cache le curseur par défaut */
 }
 
 .cursor {
@@ -277,7 +277,7 @@ button, a {
 }
 /* Styles pour le fond animé */
 #background {
-    background: linear-gradient(135deg, #6B4E71, #000000, #3A4454);
+    background: linear-gradient(135deg, #1F1B24 , #3F51B5, #FFC107);
     background-size: 400% 400%;
     animation: gradientShift 15s ease infinite;
 }

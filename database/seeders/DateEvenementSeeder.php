@@ -32,6 +32,17 @@ class DateEvenementSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'datedebut' => '2025-08-20 08:00:00',
+                'heuredebut' => '08:00:00',
+                'heureouvertureportes' => '07:30:00',
+                'placesdisponibles' => 800, // Total = 3000 (capaciteMax du lieu 2)
+                'placesvendues' => 120,
+                'idevenement' => $evenementTechMaroc->idevenement, // << CORRIGEZ EN idEvenement
+                'idlieu' => $lieuLeGrandThéâtre->idlieu,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'datedebut' => '2025-07-20 18:00:00',
                 'heuredebut' => '18:00:00',
                 'heureouvertureportes' => '17:00:00',

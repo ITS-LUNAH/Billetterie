@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\OrganisateurMiddleware;
+use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -29,4 +30,13 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    // C'est la section pour le planificateur de tâches
+    ->withSchedule(function (Schedule $schedule) { // <-- MODIFICATION ICI
+        // Planifier notre commande de nettoyage :
+        // Elle sera vérifiée toutes les minutes par 'schedule:work'.
+        // Elle agira si des réservations de plus de 10 minutes sont "en attente".
+        $schedule->command('reservations:clean-unpaid')->everyMinute();
+        // ^^^ 'everyMinute()' est idéal pour les tests en développement.
+    }) // <-- FIN DE LA SECTION DU PLANIFICATEUR
+    ->create();
