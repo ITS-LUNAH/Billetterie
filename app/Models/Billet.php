@@ -14,6 +14,8 @@ class Billet extends Model
     protected $primaryKey = 'idbillet';
     
     protected $fillable = [
+        'idevenement',
+        'iddate',
         'estscanne',
         'dateValidation',
         'QRcode',
@@ -43,9 +45,13 @@ class Billet extends Model
     {
         return $this->belongsTo(Reservation::class, 'idreservation', 'idreservation');
     }
+    public function dateEvenement()
+    {
+        return $this->belongsTo(DateEvenement::class, 'iddate', 'iddate');
+    }
 
     // Relation avec la ZoneTarifaire
-    public function zoneTarifaire()
+    public function zone()
     {
         return $this->belongsTo(ZoneTarifaire::class, 'idzone', 'idzone');
     }

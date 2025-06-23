@@ -36,6 +36,7 @@ const smoothScroll = (e) => {
       <Link 
         href="#about" 
         class="text-white hover:text-white/70 transition"
+        @click="smoothScroll"
       >
         À propos
       </Link>

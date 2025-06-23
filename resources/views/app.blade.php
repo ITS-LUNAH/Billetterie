@@ -17,5 +17,6 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+        <script src="https://js.stripe.com/v3/"></script>
     </body>
 </html>

@@ -17,9 +17,13 @@ const props = defineProps({
          default: null,
      },
      canLogin: {
-        Boolean,},
-     canRegister: {
-        Boolean,}
+        type: Boolean,
+        default: true,
+    },
+    canRegister: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const isDescriptionTabActive = ref(true); // Pour gérer les onglets
@@ -84,75 +88,96 @@ const getButtonText = () => {
 };
 </script>
 <template>
+    <GuestLayout> 
     <Head :title="evenement.titre" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <GuestLayout :canLogin="canLogin" :canRegister="canRegister"> 
-        
         <div class="container mx-auto px-4 py-8">
+                <div class="mb-6">
+                    <Link :href="route('accueil')" class="text-white hover:underline flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                        Retour 
+                    </Link>
+                </div>
             
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                        <img :src="evenement.image" :alt="evenement.titre" class="w-full h-[800px] object-cover">
+                    
+                    <div class="bg-white/70 rounded-lg shadow-md overflow-hidden">
+                        <img :src="evenement.image" :alt="evenement.titre" class="w-full h-full object-cover">
                     </div>
 
                 <div class="flex flex-col justify-between h-full">
-                <div>
-                    <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ evenement.titre }}</h1>
+
+                    <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                        {{ evenement.titre }}
+                    </h1>
+                    
                     <div class="text-gray-600 mb-6 grid gap-2">
+
                             <div class="flex items-center">
                             <i class="fas fa-map-marker-alt mr-1 text-gray-500"></i>
                             <span>{{ evenement.lieu }}</span>
                             </div>
                         
                         <div class="flex items-center space-x-4">
+
                             <div class="flex items-center">
                             <i class="far fa-calendar-alt mr-1 text-gray-500"></i>
                             <span>{{ evenement.date }}</span>
                             </div>
+
                             <div class="flex items-center">
                             <i class="far fa-clock mr-1 text-gray-500"></i>
                             <span>{{ evenement.heuredebut }}</span>
                             </div>
+
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="bg-white/70 rounded-lg shadow-md p-6">
+
                         <div class="flex border-b border-gray-200 mb-4">
                             <div
-                                :class="{'border-b-2 border-indigo-600 text-indigo-600': !isDescriptionTabActive, 'text-gray-600': isDescriptionTabActive}"
-                                class="py-2 px-4 text-lg font-semibold focus:outline-none"
-                            >
+                                :class="{'border-b-2 border-indigo-600 text-indigo-600': !isDescriptionTabActive, 'text-gray-600': isDescriptionTabActive}">
                                 Informations pratiques
                             </div>
                         </div>
 
                         <div class="prose max-w-none text-gray-700">
-                            <h3 class="font-semibold text-xl mb-2">Description</h3>
+
+                            <h3 class="font-semibold text-xl mb-2">
+                                Description
+                            </h3>
                             <p>{{ evenement.description }}</p>
 
-                            <h3 class="font-semibold text-xl mb-2 mt-4">Accès</h3>
+                            <h3 class="font-semibold text-xl mb-2 mt-4">
+                                Accès
+                            </h3>
                             <p>{{ evenement.lieu }}</p>
-                            <h3 class="font-semibold text-xl mb-2 mt-4">Horaires</h3>
+                            <h3 class="font-semibold text-xl mb-2 mt-4">
+                                Horaires
+                            </h3>
                             <p>Ouverture des portes : {{ evenement.heureouvertureportes }}</p>
                             <p>Début du concert : {{ evenement.heuredebut }}</p>
 
                         </div>
                     </div>
-
-                <div>
                 
-                </div>
-                
-                    <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+                    <div class="mt-8 bg-white/70 rounded-lg shadow-md p-6">
                     
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4">Réservation</h2>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+                            Réservation
+                        </h2>
+
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-gray-700">Prix à partir de</span>
                             <span class="text-3xl font-bold " style="color: #6B4E71;">{{ evenement.prix }} MAD</span>
                         </div>
+
                         <div class="mt-6 self-end">
-                       <button
+                        <button
                             @click="handleReservationSubmission"
                             class="w-full py-3 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors mb-4"
                             style="background-color: #6B4E71;"
@@ -162,9 +187,12 @@ const getButtonText = () => {
                         </div>
                         
                     </div>
+
                     <div v-if="evenement.type_placement === 'Numéroté'" class="mt-8 bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Sélectionnez vos sièges</h2>
-                <SeatPlan
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">
+                        Sélectionnez vos sièges
+                    </h2>
+                    <SeatPlan
                             :total-seats="planData.totalSeats"
                             :booked-seats="planData.bookedSeats"
                             :sections="planData.sections"
@@ -175,7 +203,6 @@ const getButtonText = () => {
             </div>
         </div>
     </div>
-        </div>
         
     </GuestLayout>
 </template>
