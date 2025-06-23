@@ -63,11 +63,15 @@
         </div>
 
         <div class="mb-4">
-            <label for="typePlacement" class="block font-semibold">Type de placement :</label>
-            <select id="typePlacement" name="typePlacement" class="w-full border px-3 py-2 rounded" required>
-                <option value="libre" {{ old('typePlacement', $evenement->typeplacement) == 'libre' ? 'selected' : '' }}>Libre</option>
-                <option value="numéroté" {{ old('typePlacement', $evenement->typeplacement) == 'numéroté' ? 'selected' : '' }}>Numéroté</option>
+            <label for="categorie">Catégorie :</label>
+            <select name="categorie" id="categorie" required class="...">
+                <option value="">-- Sélectionner --</option>
+                <option value="Concert">Concert</option>
+                <option value="Théâtre">Théâtre</option>
+                <option value="Festival">Festival</option>
+                <option value="Conférence">Conférence</option>
             </select>
+
         </div>
 
         <div class="mb-4">

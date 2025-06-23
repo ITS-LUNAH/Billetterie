@@ -28,7 +28,7 @@
                     <tr>
                         <th class="text-left px-4 py-2">Titre</th>
                         <th class="text-left px-4 py-2">Lieu</th>
-                        <th class="text-left px-4 py-2">Type</th>
+                        <th class="text-left px-4 py-2">Categorie</th>
                         <th class="text-left px-4 py-2">Prix</th>
                         <th class="text-left px-4 py-2">Statut</th>
                         <th class="text-left px-4 py-2">Actions</th>
@@ -39,7 +39,7 @@
                         <tr class="border-t">
                             <td class="px-4 py-2">{{ $event->titre }}</td>
                             <td class="px-4 py-2">{{ $event->lieu }}</td>
-                            <td class="px-4 py-2 capitalize">{{ $event->typeplacement }}</td>
+                            <td class="px-4 py-2 capitalize">{{ $event->categorie }}</td>
                             <td class="px-4 py-2">{{ $event->prixbase ? number_format($event->prixbase, 2) . ' DH' : 'Gratuit' }}</td>
                             <td class="px-4 py-2">
                                 @if ($event->estvalide)

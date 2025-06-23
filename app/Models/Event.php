@@ -18,7 +18,7 @@ class Event extends Model
         'description',
         'lieu',
         'bandeannonce',
-        'typeplacement',
+        'categorie',
         'estvalide',
         'idorganisateur',
         'prixbase',
