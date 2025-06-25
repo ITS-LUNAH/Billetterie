@@ -3,60 +3,91 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Inertia\Inertia;
+use App\Models\Billet;
+use App\Models\Reservation;
+use App\Models\Evenement;
+use App\Models\Organisateur;
+use App\Models\Participant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    /**
-     * Afficher le tableau de bord admin
-     */
     public function index()
     {
-        return Inertia::render('Admin/Dashboard', [
-            'title' => 'Tableau de bord',
-            'stats' => [
-                ['title' => 'Utilisateurs', 'value' => '1,234', 'icon' => 'users', 'trend' => '12%', 'trendDirection' => 'up'],
-                ['title' => 'Événements', 'value' => '56', 'icon' => 'calendar', 'trend' => '5%', 'trendDirection' => 'up'],
-                ['title' => 'Revenus', 'value' => '$8,540', 'icon' => 'dollar-sign', 'trend' => '3.2%', 'trendDirection' => 'down'],
-                ['title' => 'Taux de conversion', 'value' => '3.6%', 'icon' => 'trending-up', 'trend' => '0.4%', 'trendDirection' => 'up']
-            ],
-            'activities' => [
-                ['id' => 1, 'user' => 'Jean Dupont', 'action' => 'a créé un événement', 'time' => 'Il y a 10 minutes'],
-                ['id' => 2, 'user' => 'Marie Martin', 'action' => 'a mis à jour son profil', 'time' => 'Il y a 25 minutes'],
-                ['id' => 3, 'user' => 'Admin', 'action' => 'a supprimé un commentaire', 'time' => 'Il y a 1 heure'],
-                ['id' => 4, 'user' => 'Pierre Lambert', 'action' => 's\'est inscrit', 'time' => 'Il y a 2 heures']
-            ]
-        ]);
-    }
+        try {
+            // Statistiques pour les cartes du dashboard
+            $stats = [
+                [
+                    'title' => 'Billets Vendus',
+                    'value' => Billet::count(),
+                    'icon' => 'confirmation_number',
+                    'trend' => '+81%'
+                ],
+                [
+                    'title' => 'Revenu Total',
+                    'value' => number_format(Billet::sum('prix'), 0, ',', ' ') . ' DH',
+                    'icon' => 'trending_up',
+                    'trend' => '+62%'
+                ],
+                [
+                    'title' => 'Réservations',
+                    'value' => Reservation::count(),
+                    'icon' => 'event',
+                    'trend' => '+44%'
+                ],
+                [
+                    'title' => 'Organisateurs',
+                    'value' => Organisateur::where('estValide', true)->count(),
+                    'icon' => 'group',
+                    'trend' => '+12%'
+                ]
+            ];
 
-    /**
-     * Afficher la page des utilisateurs
-     */
-    public function users()
-    {
-        return Inertia::render('Admin/Users', [
-            'title' => 'Gestion des utilisateurs'
-        ]);
-    }
+            // Réservations récentes (dernières 10)
+            $recentReservations = Reservation::with(['user', 'evenement'])
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get()
+                ->map(function ($reservation) {
+                    return (object) [
+                        'id' => $reservation->id,
+                        'event' => (object) ['titre' => $reservation->evenement->titre ?? 'N/A'],
+                        'user' => (object) ['name' => $reservation->user->name ?? 'N/A'],
+                        'created_at' => $reservation->created_at,
+                        'status' => $reservation->status ?? 'en_attente'
+                    ];
+                });
 
-    /**
-     * Afficher la page des événements
-     */
-    public function events()
-    {
-        return Inertia::render('Admin/Events', [
-            'title' => 'Gestion des événements'
-        ]);
-    }
+            return view('admin.dashboard', compact('stats', 'recentReservations'));
 
-    /**
-     * Afficher la page des statistiques
-     */
-    public function statistics()
-    {
-        return Inertia::render('Admin/Statistics', [
-            'title' => 'Statistiques'
-        ]);
+        } catch (\Exception $e) {
+            // En cas d'erreur, passer des données par défaut
+            $stats = [
+                [
+                    'title' => 'Billets Vendus',
+                    'value' => '0',
+                    'icon' => 'confirmation_number',
+                    'trend' => '0%'
+                ],
+                [
+                    'title' => 'Revenu Total',
+                    'value' => '0 DH',
+                    'icon' => 'trending_up',
+                    'trend' => '0%'
+                ],
+                [
+                    'title' => 'Réservations',
+                    'value' => '0',
+                    'icon' => 'event',
+                    'trend' => '0%'
+                ]
+            ];
+
+            $recentReservations = collect();
+
+            return view('admin.dashboard', compact('stats', 'recentReservations'))
+                ->with('error', 'Erreur lors du chargement des données: ' . $e->getMessage());
+        }
     }
 }

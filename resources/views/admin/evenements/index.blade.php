@@ -29,7 +29,7 @@
                             <th>Organisateur</th>
                             <th>Date</th>
                             <th>Lieu</th>
-                            <th>Statut Actif</th> {{-- Renommé pour être plus clair sur 'estActif' --}}
+                            <th>Statut Valide</th> {{-- Renommé pour être plus clair sur 'estValide' --}}
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -42,18 +42,25 @@
                             <td>{{ \Carbon\Carbon::parse($evenement->dateEvenement)->format('d/m/Y H:i') }}</td>
                             <td>{{ $evenement->lieu }}</td>
                             <td>
-                                {{-- Icône cliquable pour le statut d'activation --}}
-                                <a href="javascript:void(0)" class="toggle-activation-icon"
-                                    data-id="{{ $evenement->idevenement }}"
-                                    data-estactif="{{ $evenement->estActif ? '1' : '0' }}" {{-- Stocke l'état actuel --}}
-                                    title="{{ $evenement->estActif ? 'Désactiver l\'événement' : 'Activer l\'événement' }}">
-                                    @if ($evenement->estActif)
-                                        <i class="fas fa-toggle-on fa-2x text-success" id="icon-{{ $evenement->idevenement }}"></i> {{-- Icône "on" verte --}}
-                                    @else
-                                        <i class="fas fa-toggle-off fa-2x text-danger" id="icon-{{ $evenement->idevenement }}"></i> {{-- Icône "off" rouge --}}
-                                    @endif
-                                </a>
+                                @if ($evenement->estValide)
+                                    <span class="badge badge-success">Validé</span>
+                                    <form action="{{ route('admin.evenements.refuser', $evenement->idevenement) }}" method="POST" style="display:inline;" onsubmit="return confirm('Refuser cet événement ?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-danger ml-1" title="Refuser">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="badge badge-warning">En attente / Refusé</span>
+                                    <form action="{{ route('admin.evenements.valider', $evenement->idevenement) }}" method="POST" style="display:inline;" onsubmit="return confirm('Valider cet événement ?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success ml-1" title="Valider">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             </td>
+
                             <td>
                                 {{-- Bouton pour afficher les détails (MODALE) - MAINTENANT AVEC ICÔNE --}}
                                 <button type="button" class="btn btn-info btn-sm mb-1" data-toggle="modal" data-target="#evenementDetailModal"
@@ -64,7 +71,7 @@
                                     data-date="{{ \Carbon\Carbon::parse($evenement->dateEvenement)->format('d/m/Y à H:i') }}"
                                     data-lieu="{{ $evenement->lieu }}"
                                     data-capacite="{{ $evenement->capacite }}"
-                                    data-estActif="{{ $evenement->estActif ? 'Actif' : 'Inactif' }}"
+                                    data-estValide="{{ $evenement->estValide ? 'Validé' : 'Refusé' }}"
                                     data-created-at="{{ $evenement->created_at ? $evenement->created_at->format('d/m/Y à H:i') : 'N/A' }}"
                                     data-updated-at="{{ $evenement->updated_at ? $evenement->updated_at->format('d/m/Y à H:i') : 'N/A' }}"
                                     title="Voir Détails">
@@ -112,7 +119,7 @@
                         <p><strong>Date & Heure :</strong> <span id="modalDate"></span></p>
                         <p><strong>Lieu :</strong> <span id="modalLieu"></span></p>
                         <p><strong>Capacité :</strong> <span id="modalCapacite"></span></p>
-                        <p><strong>Statut Actif :</strong> <span id="modalEstActif"></span></p>
+                        <p><strong>Statut Valide :</strong> <span id="modalEstValide"></span></p>
                     </div>
                     <div class="col-md-6">
                         <h4>Description</h4>
@@ -165,7 +172,7 @@
         var date = button.data('date');
         var lieu = button.data('lieu');
         var capacite = button.data('capacite');
-        var estActif = button.data('estactif');
+        var estValide = button.data('estvalide');
         var createdAt = button.data('created-at');
         var updatedAt = button.data('updated-at');
 
@@ -177,21 +184,21 @@
         modal.find('#modalDate').text(date);
         modal.find('#modalLieu').text(lieu);
         modal.find('#modalCapacite').text(capacite);
-        modal.find('#modalEstActif').text(estActif);
+        modal.find('#modalEstValide').text(estValide);
         modal.find('#modalCreatedAt').text(createdAt);
         modal.find('#modalUpdatedAt').text(updatedAt);
     });
 
     // Nouveau script pour les icônes cliquables d'activation/désactivation
     $(document).ready(function() {
-        $('.toggle-activation-icon').on('click', function(e) {
+        $('.toggle-validation-icon').on('click', function(e) {
             e.preventDefault(); // Empêche le comportement par défaut du lien
 
             var $link = $(this); // Le lien <a> cliqué
             var evenementId = $link.data('id');
-            var currentEstActif = $link.data('estactif') === 1; // Convertir en boolean
+            var currentEstValide = $link.data('estvalide') === 1; // Convertir en boolean
 
-            var url = '{{ route("admin.evenements.toggleActivation", ":id") }}';
+            var url = '{{ route("admin.evenements.toggleValidation", ":id") }}';
             url = url.replace(':id', evenementId);
 
             $.ajax({
@@ -208,14 +215,14 @@
 
                         // Mettre à jour l'icône et l'attribut data-estactif
                         var $icon = $('#icon-' + evenementId);
-                        if (response.estActif) { // Si l'événement est maintenant ACTIF
+                        if (response.estValide) { // Si l'événement est maintenant ACTIF
                             $icon.removeClass('fa-toggle-off text-danger').addClass('fa-toggle-on text-success');
-                            $link.data('estactif', 1); // Met à jour l'état dans les données du lien
+                            $link.data('estvalide', 1); // Met à jour l'état dans les données du lien
                             $link.attr('title', 'Désactiver l\'événement'); // Met à jour l'infobulle
                         } else { // Si l'événement est maintenant INACTIF
                             $icon.removeClass('fa-toggle-on text-success').addClass('fa-toggle-off text-danger');
-                            $link.data('estactif', 0); // Met à jour l'état dans les données du lien
-                            $link.attr('title', 'Activer l\'événement'); // Met à jour l'infobulle
+                            $link.data('estvalide', 0); // Met à jour l'état dans les données du lien
+                            $link.attr('title', 'Valider l\'événement'); // Met à jour l'infobulle
                         }
                     } else {
                         showTemporaryAlert('Erreur lors de la mise à jour du statut.', 'danger');

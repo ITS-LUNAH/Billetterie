@@ -80,4 +80,3 @@ public function edit($id)
     //     return view('admin.participants.show', compact('participant'));
     // }
 }
-

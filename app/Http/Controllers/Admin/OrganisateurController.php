@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Organisateur;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class OrganisateurController extends Controller
 {
@@ -40,7 +41,7 @@ class OrganisateurController extends Controller
         $org = Organisateur::findOrFail($id);
         $org->estActif = false;
         $org->save();
-        return back()->with('success', 'Organisateur suspendu'); // <--- This redirects
+        return response()->json(['success' => true, 'message' => 'Organisateur suspendu.', 'estActif' => $org->estActif]);
     }
 
     public function reactiver($id)
@@ -48,8 +49,7 @@ class OrganisateurController extends Controller
         $org = Organisateur::findOrFail($id);
         $org->estActif = true;
         $org->save();
-
-        return redirect()->back()->with('success', 'Organisateur réactivé.'); // <--- This redirects
+        return response()->json(['success' => true, 'message' => 'Organisateur réactivé.', 'estActif' => $org->estActif]);
     }
 
     public function edit($id)
@@ -103,5 +103,16 @@ class OrganisateurController extends Controller
                 'message' => 'Erreur lors de la mise à jour du statut'
             ], 500);
         }
+    }
+
+    public function getNomCompletAttribute()
+    {
+        return $this->lastName . ' ' . $this->firstName;
+    }
+
+    // If you have a relationship to a User model for user_id
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

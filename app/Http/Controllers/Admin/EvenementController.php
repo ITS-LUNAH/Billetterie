@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Organisateur;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class EvenementController extends Controller
 {
@@ -13,12 +14,15 @@ class EvenementController extends Controller
         return view('admin.evenements.index', compact('evenements'));
     }
 
-    public function valider($id) {
-        $e = Event::findOrFail($id);
-        $e->estValide = true;
-        $e->save();
-        return back()->with('success', 'Événement validé.');
-    }
+    public function valider($id)
+{
+    $evenement = Event::findOrFail($id);
+    $evenement->estValide = true;
+    $evenement->save();
+
+    return redirect()->back()->with('success', 'Événement validé avec succès.');
+}
+
 
 
     public function edit($id)
@@ -38,7 +42,7 @@ class EvenementController extends Controller
             'dateEvenement' => 'required|date',
             'lieu' => 'required|string|max:255',
             'capacite' => 'required|integer|min:1',
-            'organisateur_id' => 'required|exists:organisateurs,id', // Assurez-vous que la colonne ID de l'organisateur est correcte
+            'idorganisateur' => 'required|exists:organisateurs,idOrganisateur', 
             // Ajoutez d'autres règles de validation si nécessaire
         ]);
 
@@ -54,23 +58,47 @@ class EvenementController extends Controller
     }
 
 
-    public function refuser($id) {
-        $e = Event::findOrFail($id);
-        $e->estValide = false;
-        $e->save();
-        return back()->with('success', 'Événement refusé.');
-    }
+    public function refuser($id)
+{
+    $evenement = Event::findOrFail($id);
+    $evenement->estValide = false;
+    $evenement->save();
+
+    return redirect()->back()->with('success', 'Événement refusé avec succès.');
+}
+
 
     // Nouvelle méthode pour basculer le statut (pour le toggle switch)
-    public function toggleActivation($id)
+   public function toggleValidation($id)
     {
-        $evenement = Event::findOrFail($id);
-        $evenement->estActif = !$evenement->estActif; // Inverse l'état actuel de 'estActif'
-        $evenement->save();
-        return response()->json([
-            'success' => true,
-            'estActif' => $evenement->estActif, // Retourne le nouvel état
-            'message' => 'Statut d\'activation mis à jour.'
-        ]);
+        try {
+            $evenement = Event::findOrFail($id);
+            $evenement->estValide = !$evenement->estValide;
+            $evenement->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => $evenement->estValide
+                    ? 'Evenement validé avec succès' 
+                    : 'Evenement refuser avec succès',
+                'estActif' => $organisateur->estActif
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour du statut'
+            ], 500);
+        }
     }
+
+    public function rules()
+{
+    return [
+        'nom' => 'required',        // <-- Ces lignes sont le problème
+        'prenom' => 'required',     // <-- Ces lignes sont le problème
+        'dateDebut' => 'required|date',
+        'dateFin' => 'required|date|after_or_equal:dateDebut',
+        // ... autres règles pour l'événement
+    ];
+}
 }

@@ -1,32 +1,43 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue'; // Ou AppLayout si vous n'avez pas de layout Admin spécifique
-import Welcome from '@/components/Welcome.vue'; // Un composant d'exemple de Jetstream
+import AdminLayout from '@/Layouts/AdminLayout.vue'
 
-// Définissez les props que ce composant peut recevoir du contrôleur Laravel
-defineProps({
-    message: String,
-    // Ajoutez d'autres props si vous les passez depuis le contrôleur
-});
+const props = defineProps({
+  title: String,
+  stats: Array,
+  activities: Array
+})
 </script>
 
 <template>
-    <AppLayout> <!-- Utilise un layout spécifique pour l'admin, ou AppLayout -->
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Tableau de Bord Administrateur
-            </h2>
-        </template>
+  <AdminLayout>
+    <div class="p-6">
+      <h1 class="text-2xl font-bold mb-6">{{ props.title }}</h1>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="p-6">
-                        <p class="text-lg font-medium text-gray-900">{{ message }}</p>
-                        <p class="mt-4 text-gray-700">Ici, vous pourrez gérer les utilisateurs, les événements, etc.</p>
-                        <Welcome class="mt-8" />
-                    </div>
-                </div>
-            </div>
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div v-for="stat in props.stats" :key="stat.title" class="bg-white p-4 rounded shadow">
+          <div class="text-gray-500">{{ stat.title }}</div>
+          <div class="text-2xl font-bold">{{ stat.value }}</div>
+          <div :class="{
+            'text-green-600': stat.trendDirection === 'up',
+            'text-red-600': stat.trendDirection === 'down'
+          }">
+            {{ stat.trend }} <span v-if="stat.trendDirection === 'up'">▲</span>
+                          <span v-else>▼</span>
+          </div>
         </div>
-    </AppLayout>
+      </div>
+
+      <!-- Activities -->
+      <div class="bg-white p-4 rounded shadow">
+        <h2 class="text-xl font-semibold mb-4">Activités récentes</h2>
+        <ul>
+          <li v-for="activity in props.activities" :key="activity.id" class="border-b py-2">
+            <strong>{{ activity.user }}</strong> {{ activity.action }} —
+            <span class="text-gray-500">{{ activity.time }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </AdminLayout>
 </template>

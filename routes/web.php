@@ -6,12 +6,12 @@ use Inertia\Inertia;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 // Contrôleurs Admin
-use App\Http\Controllers\Organisateur\OrganisateurController;
+//use App\Http\Controllers\Organisateur\OrganisateurController;
 use App\Http\Controllers\Admin\StatistiqueController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrganisateurController;
 use App\Http\Controllers\Admin\EvenementController as AdminEvenementController;
-use App\Http\Controllers\Admin\StatistiqueController;
+//use App\Http\Controllers\Admin\StatistiqueController;
 use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\CommissionController;
 
@@ -124,9 +124,8 @@ Route::middleware([
 
     // --- Zone Admin ---
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // Organisateurs
         Route::get('/organisateurs', [OrganisateurController::class, 'index'])->name('organisateurs.index');
@@ -143,7 +142,7 @@ Route::middleware([
         Route::resource('evenements', App\Http\Controllers\Admin\EvenementController::class)->except(['show']);
         Route::post('/evenements/{id}/valider', [AdminEvenementController::class, 'valider'])->name('evenements.valider');
         Route::post('/evenements/{id}/refuser', [AdminEvenementController::class, 'refuser'])->name('evenements.refuser');
-        Route::post('evenements/{id}/toggle-activation', [App\Http\Controllers\Admin\EvenementController::class, 'toggleActivation'])->name('evenements.toggleActivation');
+        Route::post('evenements/{id}/toggle-validation', [App\Http\Controllers\Admin\EvenementController::class, 'toggleValidation'])->name('evenements.toggleValidation');
 
 
         // Statistiques

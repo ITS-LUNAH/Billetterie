@@ -47,9 +47,9 @@
 
                 <div class="form-group">
                     <label for="organisateur_id">Organisateur</label>
-                    <select class="form-control" id="organisateur_id" name="organisateur_id" required>
+                    <select class="form-control" id="idorganisateur" name="idorganisateur" required>
                         @foreach($organisateurs as $organisateur)
-                            <option value="{{ $organisateur->id }}" {{ $evenement->organisateur_id == $organisateur->id ? 'selected' : '' }}>
+                            <option value="{{ $organisateur->idorganisateur }}" {{ $evenement->organisateur_id == $organisateur->id ? 'selected' : '' }}>
                                 {{ $organisateur->nomComplet }}
                             </option>
                         @endforeach
@@ -57,9 +57,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="estActif">Statut Actif</label>
+                    <label for="estValide">Statut Valide</label>
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="estActif" name="estActif" value="1" {{ old('estActif', $evenement->estActif) ? 'checked' : '' }}>
+                        <input type="checkbox" class="form-check-input" id="estValide" name="estValide" value="1" {{ old('estValide', $evenement->estValdie) ? 'checked' : '' }}>
                         <label class="form-check-label" for="estActif">Actif</label>
                     </div>
                 </div>
