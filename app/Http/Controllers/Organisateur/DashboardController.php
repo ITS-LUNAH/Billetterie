@@ -64,7 +64,7 @@ class DashboardController extends Controller
                                      ->count();
 
         // Note moyenne (à adapter si vous avez un système de notation)
-        $averageRating = 'N/A';
+        $averageRating = 'N/A'; //n'est pas appliqué
 
         // --- Statistiques par événement ---
         // Modification ici : utiliser 'evenements.titre' explicitement
