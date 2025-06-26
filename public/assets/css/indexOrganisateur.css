@@ -1,0 +1,310 @@
+/* Animation d'arrière-plan avec étoiles volantes */
+body {
+    position: relative;
+    overflow-x: hidden;
+    background: linear-gradient(135deg, #485fc7 0%, #a82cb5 100%);
+    min-height: 100vh;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    background: 
+        radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(2px 2px at 160px 30px, #fff, transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: sparkle 20s linear infinite;
+}
+
+@keyframes sparkle {
+    0% { transform: translateY(100vh) translateX(0); }
+    100% { transform: translateY(-100px) translateX(100px); }
+}
+
+/* Étoiles volantes supplémentaires */
+.star {
+    position: fixed;
+    background: rgb(255, 255, 255);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.star::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+.star:nth-child(1) {
+    width: 2px;
+    height: 2px;
+    top: 20%;
+    animation: fly1 15s linear infinite;
+}
+
+.star:nth-child(2) {
+    width: 3px;
+    height: 3px;
+    top: 40%;
+    animation: fly2 12s linear infinite 2s;
+}
+
+.star:nth-child(3) {
+    width: 1px;
+    height: 1px;
+    top: 60%;
+    animation: fly3 18s linear infinite 4s;
+}
+
+.star:nth-child(4) {
+    width: 2px;
+    height: 2px;
+    top: 80%;
+    animation: fly4 14s linear infinite 1s;
+}
+
+@keyframes fly1 {
+    0% { left: -10px; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: calc(100% + 10px); opacity: 0; }
+}
+
+@keyframes fly2 {
+    0% { left: -10px; opacity: 0; transform: translateY(0); }
+    10% { opacity: 1; }
+    50% { transform: translateY(-20px); }
+    90% { opacity: 1; }
+    100% { left: calc(100% + 10px); opacity: 0; transform: translateY(0); }
+}
+
+@keyframes fly3 {
+    0% { left: -10px; opacity: 0; transform: translateY(0) scale(0.5); }
+    10% { opacity: 1; }
+    30% { transform: translateY(-30px) scale(1); }
+    70% { transform: translateY(10px) scale(0.8); }
+    90% { opacity: 1; }
+    100% { left: calc(100% + 10px); opacity: 0; transform: translateY(0) scale(0.5); }
+}
+
+@keyframes fly4 {
+    0% { left: -10px; opacity: 0; }
+    10% { opacity: 1; }
+    25% { transform: translateY(-15px); }
+    75% { transform: translateY(5px); }
+    90% { opacity: 1; }
+    100% { left: calc(100% + 10px); opacity: 0; }
+}
+
+/* Animations pour les éléments existants */
+.max-w-5xl {
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation du titre */
+h1 {
+    animation: slideInLeft 1s ease-out 0.2s both;
+    color: white;
+    text-shadow: 3px 3px 4px rgba(0,0,0,0.5);
+}
+
+@keyframes slideInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animation du message de succès */
+.bg-green-200 {
+    animation: bounceIn 0.8s ease-out 0.5s both;
+    border-left: 4px solid #10b981;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Animation du bouton créer */
+.bg-blue-600 {
+    animation: slideInRight 1s ease-out 0.7s both;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    background-color : #cb4ed8;
+}
+
+.bg-blue-600::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.bg-blue-600:hover::before {
+    left: 100%;
+}
+
+.bg-blue-600:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 155, 230, 0.4);
+}
+
+@keyframes slideInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animation du tableau */
+table {
+    animation: fadeInScale 1.2s ease-out 0.9s both;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Animation des lignes du tableau */
+tbody tr {
+    transition: all 0.3s ease;
+}
+
+tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: translateX(5px);
+}
+
+/* Effet de pulsation sur les statuts */
+.text-yellow-600 {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Animation des liens et boutons */
+.text-blue-600, .text-red-600 {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.text-blue-600:hover, .text-red-600:hover {
+    transform: scale(1.1);
+}
+
+.text-blue-600::after, .text-red-600::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: width 0.3s ease;
+}
+
+.text-blue-600:hover::after, .text-red-600:hover::after {
+    width: 100%;
+}
+
+/* Effet de particules flottantes */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px),
+        radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 2px, transparent 2px);
+    background-size: 100px 100px, 150px 150px, 200px 200px;
+    animation: float 30s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    33% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+    66% {
+        transform: translateY(5px) rotate(-1deg);
+    }
+}

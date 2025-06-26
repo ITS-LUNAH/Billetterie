@@ -37,6 +37,6 @@ class Organisateur extends Model
 
     public function evenements()
     {
-        return $this->hasMany(Event::class, 'organisateur_id', 'idOrganisateur'); // 'organisateur_id' dans events, 'idOrganisateur' dans organisateurs
+        return $this->hasMany(Event::class, 'idorganisateur', 'idOrganisateur'); 
     }
 }

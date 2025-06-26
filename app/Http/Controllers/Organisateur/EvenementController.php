@@ -25,58 +25,44 @@ class EvenementController extends Controller
     }
 
     public function store(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'titre' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'lieu' => 'required|string|max:255',
-                'bandeAnnonce' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'typePlacement' => 'required|in:libre,numéroté',
-                'prixBase' => 'nullable|numeric',
-            ]);
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->errors())->withInput();
-        }
+{
+    $request->validate([
+        'titre' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'lieu' => 'required|string|max:255',
+        'bandeAnnonce' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'categorie' => 'required|string',
+        'prixBase' => 'nullable|numeric|min:0',
+    ]);
 
-        $user = auth()->user();
-        
-        if (!$user->organisateur) {
-            return back()->with('error', 'Aucun compte organisateur lié à cet utilisateur.');
-        }
-        
-        $idOrganisateur = $user->organisateur->idOrganisateur;
+    // Trouver l’organisateur connecté
+    $organisateur = \App\Models\Organisateur::where('user_id', auth()->id())->first();
 
-        // Gestion de l'upload de l'image
-        $bandeAnnoncePath = null;
-        if ($request->hasFile('bandeAnnonce')) {
-            try {
-                $bandeAnnoncePath = $request->file('bandeAnnonce')->store('events-photos', 'public');
-            } catch (\Exception $e) {
-                Log::error('Erreur upload image: ' . $e->getMessage());
-            }
-        }
-
-        $eventData = [
-            'titre' => $validated['titre'],
-            'description' => $validated['description'] ?? null,
-            'lieu' => $validated['lieu'],
-            'bandeannonce' => $bandeAnnoncePath,
-            'typeplacement' => $validated['typePlacement'],
-            'prixbase' => $validated['prixBase'] ?? 0,
-            'idOrganisateur' => $idOrganisateur,
-            'estvalide' => false,
-        ];
-
-        try {
-            $evenement = Event::create($eventData);
-            return redirect()->route('organisateur.evenements.index')->with('success', 'Événement créé avec succès.');
-            
-        } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la création de l\'événement: ' . $e->getMessage())->withInput();
-        }
+    if (!$organisateur) {
+        return redirect()->back()->with('error', 'Organisateur introuvable.');
     }
+
+    $bandeAnnoncePath = null;
+
+    if ($request->hasFile('bandeAnnonce')) {
+        $bandeAnnoncePath = $request->file('bandeAnnonce')->store('bandeannonces', 'public');
+    }
+
+    \App\Models\Event::create([
+        'titre' => $request->titre,
+        'description' => $request->description,
+        'lieu' => $request->lieu,
+        'bandeannonce' => $bandeAnnoncePath,
+        'categorie' => $request->categorie,
+        'prixbase' => $request->prixBase ?? 0,
+        'estvalide' => false,
+        'estActif' => true,
+        'idorganisateur' => $organisateur->idOrganisateur,
+    ]);
+
+    return redirect()->route('organisateur.evenements.index')->with('success', 'Événement créé avec succès.');
+}
+
 
     public function edit($id)
     {
@@ -88,58 +74,34 @@ class EvenementController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $evenement = Event::where('idevenement', $id)
-                              ->where('idOrganisateur', auth()->user()->organisateur->idOrganisateur)
-                              ->firstOrFail();
+{
+    $request->validate([
+        'titre' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'lieu' => 'required|string|max:255',
+        'bandeAnnonce' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'categorie' => 'required|string',
+        'prixBase' => 'nullable|numeric|min:0',
+    ]);
 
-        try {
-            $validated = $request->validate([
-                'titre' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'lieu' => 'required|string|max:255',
-                'bandeAnnonce' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'typePlacement' => 'required|in:libre,numéroté',
-                'prixBase' => 'nullable|numeric',
-            ]);
-            
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return back()->withErrors($e->errors())->withInput();
-        }
+    $evenement = \App\Models\Event::findOrFail($id);
 
-        // Gestion de l'upload de la nouvelle image
-        $bandeAnnoncePath = $evenement->bandeannonce; // Garder l'ancienne image par défaut
-        
-        if ($request->hasFile('bandeAnnonce')) {
-            try {
-                // Supprimer l'ancienne image si elle existe
-                if ($evenement->bandeannonce && Storage::disk('public')->exists($evenement->bandeannonce)) {
-                    Storage::disk('public')->delete($evenement->bandeannonce);
-                }
-                
-                // Uploader la nouvelle image
-                $bandeAnnoncePath = $request->file('bandeAnnonce')->store('events-photos', 'public');
-            } catch (\Exception $e) {
-                Log::error('Erreur upload image: ' . $e->getMessage());
-            }
-        }
-
-        try {
-            $evenement->update([
-                'titre' => $validated['titre'],
-                'description' => $validated['description'] ?? null,
-                'lieu' => $validated['lieu'],
-                'bandeannonce' => $bandeAnnoncePath,
-                'typeplacement' => $validated['typePlacement'],
-                'prixbase' => $validated['prixBase'] ?? 0,
-            ]);
-            
-            return redirect()->route('organisateur.evenements.index')->with('success', 'Événement modifié avec succès.');
-            
-        } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la modification: ' . $e->getMessage())->withInput();
-        }
+    if ($request->hasFile('bandeAnnonce')) {
+        $path = $request->file('bandeAnnonce')->store('bandeannonces', 'public');
+        $evenement->bandeannonce = $path;
     }
+
+    $evenement->update([
+        'titre' => $request->titre,
+        'description' => $request->description,
+        'lieu' => $request->lieu,
+        'categorie' => $request->categorie,
+        'prixbase' => $request->prixBase ?? 0,
+    ]);
+
+    return redirect()->route('organisateur.evenements.index')->with('success', 'Événement modifié avec succès.');
+}
+
 
     public function destroy($id)
     {

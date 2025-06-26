@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\CommissionController;
 // Contrôleurs Organisateur
 use App\Http\Controllers\Organisateur\DashboardController as OrganisateurDashboardController;
 use App\Http\Controllers\Organisateur\EvenementController as OrganisateurEvenementController;
+use  App\Http\Controllers\Organisateur\StatistiqueOrganisateurController;
 
 // Contrôleurs généraux
 use App\Http\Controllers\EventController;
@@ -164,7 +165,18 @@ Route::middleware([
     Route::middleware('organisateur')->prefix('organisateur')->name('organisateur.')->group(function () {
         Route::get('/dashboard', [OrganisateurDashboardController::class, 'index'])->name('dashboard');
 
+        Route::get('/api/stats', [App\Http\Controllers\Organisateur\DashboardController::class, 'getStats'])
+            ->name('api.stats');
+    
+    // API pour récupérer l'activité récente (optionnel)
+        Route::get('/api/activity', [App\Http\Controllers\Organisateur\DashboardController::class, 'getActivity'])
+            ->name('api.activity');
+
         // Gestion événements
+        Route::post('/organisateur/evenements', [OrganisateurEvenementController::class, 'store'])->name('organisateur.evenements.store');
+
+        Route::middleware('auth:sanctum')->get('/organisateur/statistiques', [StatistiqueOrganisateurController::class, 'index']);
+
         Route::get('/evenements/create', [OrganisateurEvenementController::class, 'create'])->name('evenements.create');
         Route::post('/evenements', [OrganisateurEvenementController::class, 'store'])->name('evenements.store');
         Route::get('/evenements', [OrganisateurEvenementController::class, 'index'])->name('evenements.index');

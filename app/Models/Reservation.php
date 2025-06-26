@@ -53,4 +53,10 @@ class Reservation extends Model
         return $this->billets->first() ? $this->billets->first()->evenement : null;
     }
 
+    public function getevenement()
+    {
+         return $this->belongsTo(Event::class, 'idevenement', 'idevenement');
+    }
+
+
 }
