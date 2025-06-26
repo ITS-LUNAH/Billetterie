@@ -1,6 +1,7 @@
 <script setup>
 // import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
+import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 
 // Définissez les props que ce composant peut recevoir du contrôleur Laravel
 defineProps({
