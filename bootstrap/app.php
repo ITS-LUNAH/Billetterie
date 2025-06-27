@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => AdminMiddleware::class, 
             'organisateur' => OrganisateurMiddleware::class,
+            'participant' => \App\Http\Middleware\ParticipantMiddleware::class,
 
         ]);
 

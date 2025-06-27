@@ -15,9 +15,13 @@ const props = defineProps({
 
 const form = useForm({
     _method: 'PUT',
-    name: props.user.name,
+    firstName: props.user.firstName,
+    lastName: props.user.lastName,
     email: props.user.email,
     photo: null,
+    compteBancaire: null,
+    IBAN: null,
+    RIB: null,
 });
 
 const verificationLinkSent = ref(null);
@@ -101,7 +105,7 @@ const clearPhotoFileInput = () => {
 
                 <!-- Current Profile Photo -->
                 <div v-show="! photoPreview" class="mt-2">
-                    <img :src="user.profile_photo_url" :alt="user.name" class="rounded-full size-20 object-cover">
+                    <img :src="user.profile_photo_url" :alt="user.firstName" class="rounded-full size-20 object-cover">
                 </div>
 
                 <!-- New Profile Photo Preview -->
@@ -128,18 +132,31 @@ const clearPhotoFileInput = () => {
                 <InputError :message="form.errors.photo" class="mt-2" />
             </div>
 
-            <!-- Name -->
+            <!-- firstName -->
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="firstName" value="prénom" />
                 <TextInput
-                    id="name"
-                    v-model="form.name"
+                    id="firstName"
+                    v-model="form.firstName"
                     type="text"
                     class="mt-1 block w-full"
                     required
-                    autocomplete="name"
+                    autocomplete="firstName"
                 />
-                <InputError :message="form.errors.name" class="mt-2" />
+                <InputError :message="form.errors.firstName" class="mt-2" />
+            </div>
+            <!-- lastName -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="lastName" value="Nom" />
+                <TextInput
+                    id="lastName"
+                    v-model="form.lastName"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="lastName"
+                />
+                <InputError :message="form.errors.firstName" class="mt-2" />
             </div>
 
             <!-- Email -->
@@ -174,6 +191,45 @@ const clearPhotoFileInput = () => {
                         A new verification link has been sent to your email address.
                     </div>
                 </div>
+            </div>
+            <!-- compteBancaire -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="compteBancaire" value="Compte Bancaire" />
+                <TextInput
+                    id="compteBancaire"
+                    v-model="form.compteBancaire"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="compteBancaire"
+                />
+                <InputError :message="form.errors.firstName" class="mt-2" />
+            </div>
+            <!-- IBAN -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="IBAN" value="IBAN" />
+                <TextInput
+                    id="IBAN"
+                    v-model="form.IBAN"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="IBAN"
+                />
+                <InputError :message="form.errors.firsName" class="mt-2" />
+            </div>
+            <!-- RIB -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="RIB" value="RIB" />
+                <TextInput
+                    id="RIB"
+                    v-model="form.RIB"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="RIB"
+                />
+                <InputError :message="form.errors.firstName" class="mt-2" />
             </div>
         </template>
 

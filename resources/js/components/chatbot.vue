@@ -4,25 +4,18 @@ import { ref, nextTick, onMounted } from 'vue'
 // État du chatbot
 const isOpen = ref(false)
 const messages = ref([])
-const userInput = ref('')
 const isTyping = ref(false)
 const messagesContainer = ref(null)
 
 // Questions prédéfinies et réponses
 const predefinedResponses = {
-  'bonjour': 'Bonjour ! Comment puis-je vous aider aujourd\'hui ?',
-  'salut': 'Salut ! Que puis-je faire pour vous ?',
-  'événements': 'Nous avons de nombreux événements passionnants ! Utilisez notre barre de recherche pour trouver celui qui vous intéresse.',
-  'prix': 'Les prix varient selon l\'événement. Vous pouvez voir le prix de chaque événement sur sa page de détails.',
-  'réservation': 'Pour réserver, cliquez sur "Voir détails" sur l\'événement qui vous intéresse, puis suivez les étapes.',
-  'contact': 'Vous pouvez nous contacter à contact@evup.com ou par téléphone au 06 00 00 00 00.',
-  'aide': 'Je peux vous aider avec : les événements, les prix, les réservations, et les informations de contact.',
-  'merci': 'De rien ! N\'hésitez pas si vous avez d\'autres questions.',
-  'au revoir': 'Au revoir ! À bientôt sur EVUP !',
-  'default': 'Je ne suis pas sûr de comprendre. Tapez "aide" pour voir ce que je peux faire pour vous.'
+  'Comment réserver un événement ?': 'Pour réserver un événement cliquez sur l\'événement qui vous intéresse, puis suivez les étapes..',
+  'Quels sont les prix ?': 'Les prix varient selon l\'événement. Vous pouvez voir le prix de chaque événement sur sa page de détails.',
+  'Voir les événements ': 'vous pouvez voir les événements à venir dans la page d\'accueil.',
+  'Comment vous contacter ?': 'Vous pouvez nous contacter à contact@evup.com ou par téléphone au +212 1 23 45 67 89.',
 }
 
-// Questions suggérées
+// Questions suggérées (toujours disponibles)
 const suggestedQuestions = [
   'Comment réserver un événement ?',
   'Quels sont les prix ?',
@@ -34,8 +27,8 @@ const suggestedQuestions = [
 const toggleChat = () => {
   isOpen.value = !isOpen.value
   if (isOpen.value && messages.value.length === 0) {
-    // Message de bienvenue
-    addBotMessage('Bonjour ! Je suis votre assistant EVUP. Comment puis-je vous aider ?')
+    // Message de bienvenue plus court
+    addBotMessage('Bonjour ! Je suis votre assistant EVUP.')
   }
 }
 
@@ -81,51 +74,13 @@ const simulateTyping = () => {
   })
 }
 
-// Obtenir une réponse du bot
-const getBotResponse = (userMessage) => {
-  const message = userMessage.toLowerCase()
-  
-  // Chercher une correspondance dans les réponses prédéfinies
-  for (const [key, response] of Object.entries(predefinedResponses)) {
-    if (message.includes(key)) {
-      return response
-    }
-  }
-  
-  return predefinedResponses.default
-}
-
-// Envoyer un message
-const sendMessage = async () => {
-  if (!userInput.value.trim()) return
-  
-  const message = userInput.value.trim()
-  addUserMessage(message)
-  userInput.value = ''
-  
-  // Simuler la frappe du bot
-  await simulateTyping()
-  
-  // Obtenir et envoyer la réponse
-  const response = getBotResponse(message)
-  addBotMessage(response)
-}
-
 // Envoyer une question suggérée
 const sendSuggestedQuestion = async (question) => {
   addUserMessage(question)
   await simulateTyping()
   
-  const response = getBotResponse(question)
+  const response = predefinedResponses[question]
   addBotMessage(response)
-}
-
-// Gérer la touche Entrée
-const handleKeyPress = (event) => {
-  if (event.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault()
-    sendMessage()
-  }
 }
 
 // Formater l'heure
@@ -212,44 +167,25 @@ const formatTime = (date) => {
           </div>
         </div>
 
-        <!-- Questions suggérées (seulement au début) -->
-        <div v-if="messages.length <= 1" class="space-y-2">
-          <p class="text-xs text-gray-500 text-center">Questions suggérées :</p>
+        <!-- Questions suggérées (toujours visibles après chaque échange) -->
+        <div v-if="!isTyping" class="space-y-2 mt-4">
+          <p class="text-xs text-gray-500 text-center">Choisissez une question :</p>
           <div class="space-y-1">
             <button
               v-for="question in suggestedQuestions"
               :key="question"
               @click="sendSuggestedQuestion(question)"
-              class="w-full text-left text-xs bg-gray-50 hover:bg-gray-100 p-2 rounded border transition-colors"
+              class="w-full text-left text-xs bg-gray-50 hover:bg-indigo-50 hover:border-indigo-300 p-2 rounded border border-gray-200 transition-all duration-200"
             >
-              {{ question }}
+              <span class="text-gray-800">{{ question }}</span>
+              <svg class="w-3 h-3 float-right mt-0.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
             </button>
           </div>
         </div>
       </div>
-
-      <!-- Zone de saisie -->
-      <div class="p-4 border-t border-gray-200">
-        <div class="flex space-x-2">
-          <input
-            v-model="userInput"
-            @keypress="handleKeyPress"
-            type="text"
-            placeholder="Tapez votre message..."
-            class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-gray-900"
-          />
-          <button
-            @click="sendMessage"
-            :disabled="!userInput.trim()"
-            class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
+    </div> 
 
     <!-- Bouton d'ouverture -->
     <button
@@ -264,4 +200,5 @@ const formatTime = (date) => {
       </svg>
     </button>
   </div>
+  <!-- Balise de fermeture ajoutée -->
 </template>

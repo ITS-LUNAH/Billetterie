@@ -19,6 +19,20 @@ defineProps({
     },
 });
 
+const categories = [
+  { name: 'Festivals', icon: 'fa-calendar-days', slug: 'festivals' },
+  { name: 'Théâtre & Humour', icon: 'fa-masks-theater', slug: 'theatre-humour' },
+  { name: 'Jeune Public', icon: 'fa-child', slug: 'jeune-public' },
+  { name: 'Salon & Formation', icon: 'fa-graduation-cap', slug: 'salon-formation' },
+  { name: 'Cinéma', icon: 'fa-film', slug: 'cinema' },
+  { name: 'Sport', icon: 'fa-futbol', slug: 'sport' }
+];
+
+const handleCategoryClick = (categorySlug) => {
+  // Logique pour filtrer par catégorie
+  router.get(route('events.category', categorySlug));
+};
+
 function handleImageError() {
     document.getElementById('screenshot-container')?.classList.add('!hidden');
     document.getElementById('docs-card')?.classList.add('!row-span-1');
@@ -53,57 +67,38 @@ const performSearch = () => {
     <div class="bg-transparent-400 text-black/50 text-black/50">
     <div id="animated-background" class="absolute -left-20 top-0 max-w-[877px] w-full h-full animate-pulse"></div>        <div class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
             <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-                
 
-    <!--barre de recherche-->
-    <div class="px-4 pb-3 mx-auto max-w-3xl w-full">
-      <div class="relative">
-        <input
-          type="text"
-          v-model="searchQuery"
-          @keyup.enter="performSearch"
-          placeholder="Rechercher..."
-          class="w-full bg-white/40 rounded-full border border-gray-300 py-2 pl-4 pr-10 focus:border-indigo-500 focus:ring-indigo-500"
-        >
-        <button 
-          @click="performSearch"
-          class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-indigo-600"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </button>
+              
+              <!-- Section Catégories -->
+    <section class="py-8 mt-6">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
+          <h2 class="text-2xl font-bold text-white text-center mb-6">
+            Explorez par catégorie
+          </h2>
+        <div class="flex flex-wrap justify-center gap-4">
+          <button
+            v-for="category in categories"
+            :key="category.slug"
+            @click="handleCategoryClick(category.slug)"
+            class="flex items-center space-x-3 bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg backdrop-blur-sm border border-white/20"
+          >
+            <i :class="`fa-solid ${category.icon} text-lg`"></i>
+            <span class="font-medium">{{ category.name }}</span>
+          </button>
+        </div>
+        </div>
       </div>
-    </div>
-
-                <main class="mt-6">
+    </section>
+                <main class="mt-4">
                     <div class="grid grid-cols-1 gap-4">
 
-            <section id="hero-search-section" class="flex flex-col items-center justify-center text-center py-16">
-            <div class="relative z-10 py-12">
-            <!-- Hero Section -->
-            <div class="text-center mb-12">
-                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
-                    Découvrez les meilleurs événements
-                </h1>
-                <p class="text-xl text-white/80 mb-8">
-                    Trouvez et réservez vos événements préférés en quelques clics
-                </p>
-            </div>
-
-            <!-- Barre de recherche -->
-            <div class="mb-16">
-                <EventSearchBar />
-            </div>
-
-            </div>
-            </section>
-
                     <!-- Section Evenements a venir -->
-                    <section id="upcoming-events-section" class="py-16 mt-12">
-                    <h2 class="text-4xl font-extrabold text-white mb-10 text-center">
+                    <section id="upcoming-events-section" class="py-16 mt-10">
+                    
+                    <h1 class="text-4xl md:text-6xl font-bold text-white text-center mb-6">
                         Événements à Venir
-                    </h2>
+                    </h1>
                     <p v-if="upcomingEvents.length === 0" class="text-center text-gray-600 text-lg">
                         Aucun événement à venir pour le moment. Revenez bientôt !
                     </p>
@@ -139,6 +134,26 @@ const performSearch = () => {
                         </div>
                     </div>
                     </section>
+
+            <section id="hero-search-section" class="flex flex-col items-center justify-center text-center py-16">
+            <div class="relative z-10 py-12">
+            <!-- Hero Section -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
+                    Découvrez les meilleurs événements
+                </h1>
+                <p class="text-xl text-white/80 mb-8">
+                    Trouvez et réservez vos événements préférés en quelques clics
+                </p>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="mb-16">
+                <EventSearchBar />
+            </div>
+
+            </div>
+            </section>
 
                     <!-- Section comment ca marche/demo -->
                     <section id="how-it-works-section" class="py-16 bg-transparent mt-12">

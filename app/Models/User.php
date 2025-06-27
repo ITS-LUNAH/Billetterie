@@ -82,7 +82,7 @@ class User extends Authenticatable
 
     public function participant()
 {
-    return $this->hasOne(Participant::class);
+    return $this->hasOne(Participant::class, 'user_id', 'id');
 }
 
 // --- Accesseur pour obtenir le profil spécifique ---
