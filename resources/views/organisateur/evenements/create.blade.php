@@ -40,15 +40,23 @@
         </div>
 
         <div class="mb-4">
-            <label for="categorie">Catégorie :</label>
-            <select name="categorie" id="categorie" required class="...">
+            <label for="categorie" class="block font-semibold">Catégorie :</label>
+            <select name="categorie" id="categorie" required class="w-full border px-3 py-2 rounded">
                 <option value="">-- Sélectionner --</option>
                 <option value="Concert">Concert</option>
                 <option value="Théâtre">Théâtre</option>
                 <option value="Festival">Festival</option>
                 <option value="Conférence">Conférence</option>
             </select>
+        </div>
 
+        <div class="mb-4">
+            <label for="typeplacement" class="block font-semibold">Type de placement :</label>
+            <select name="typeplacement" id="typeplacement" class="w-full border px-3 py-2 rounded">
+                <option value="">-- Sélectionner --</option>
+                <option value="libre">Placement libre</option>
+                <option value="numerote">Placement numéroté</option>
+            </select>
         </div>
 
         <div class="mb-4">

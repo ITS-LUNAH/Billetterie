@@ -33,6 +33,7 @@ class EvenementController extends Controller
         'bandeAnnonce' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'categorie' => 'required|string',
         'prixBase' => 'nullable|numeric|min:0',
+        'typeplacement' => 'nullable|string|max:255',
     ]);
 
     // Trouver l’organisateur connecté
@@ -58,6 +59,7 @@ class EvenementController extends Controller
         'estvalide' => false,
         'estActif' => true,
         'idorganisateur' => $organisateur->idOrganisateur,
+        'typeplacement' => $request->typeplacement,
     ]);
 
     return redirect()->route('organisateur.evenements.index')->with('success', 'Événement créé avec succès.');
@@ -82,6 +84,7 @@ class EvenementController extends Controller
         'bandeAnnonce' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'categorie' => 'required|string',
         'prixBase' => 'nullable|numeric|min:0',
+        'typeplacement' => 'nullable|string|max:255',
     ]);
 
     $evenement = \App\Models\Event::findOrFail($id);
@@ -97,6 +100,7 @@ class EvenementController extends Controller
         'lieu' => $request->lieu,
         'categorie' => $request->categorie,
         'prixbase' => $request->prixBase ?? 0,
+        'typeplacement' => $request->typeplacement,
     ]);
 
     return redirect()->route('organisateur.evenements.index')->with('success', 'Événement modifié avec succès.');

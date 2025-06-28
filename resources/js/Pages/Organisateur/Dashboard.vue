@@ -2,7 +2,14 @@
 // import AppLayout from '@/Layouts/AppLayout.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { Html5QrcodeScanner, Html5QrcodeSupportedFormats } from 'html5-qrcode';
+import { router } from '@inertiajs/vue3'
 
+const logout = () => {
+    const confirmLogout = confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
+    if (confirmLogout) {
+        router.post('/logout');
+    }
+};
 // Définissez les props que ce composant peut recevoir du contrôleur Laravel
 defineProps({
     message: String,
@@ -191,6 +198,20 @@ onUnmounted(() => {
                                 <span>{{ isScanning ? 'Scan en cours...' : 'Scanner QR' }}</span>
                             </button>
                             
+                            <!-- Bouton de déconnexion  -->
+                            <button 
+                                @click="logout"
+                                class="group bg-gradient-to-r from-red-400 to-pink-500 hover:from-red-500 hover:to-pink-600 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-2 relative overflow-hidden"
+                                title="Se déconnecter"
+                            >
+                                <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                                <i class="fas fa-sign-out-alt text-sm transform group-hover:rotate-12 transition-transform duration-300"></i>
+                                <span class="text-sm font-medium hidden sm:inline">Déconnexion</span>
+                                <div class="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+                            </button>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
                             <div class="relative">
                                 <img 
                                     :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.firstName || 'Utilisateur')}&color=7F9CF5&background=EBF4FF`" 

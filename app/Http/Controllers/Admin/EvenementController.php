@@ -41,7 +41,8 @@ class EvenementController extends Controller
             'description' => 'nullable|string',
             'dateEvenement' => 'required|date',
             'lieu' => 'required|string|max:255',
-            'capacite' => 'required|integer|min:1',
+            'typeplacement' => 'nullable|string|max:255',
+            //'capacite' => 'required|integer|min:1',
             'idorganisateur' => 'required|exists:organisateurs,idOrganisateur', 
             // Ajoutez d'autres règles de validation si nécessaire
         ]);
