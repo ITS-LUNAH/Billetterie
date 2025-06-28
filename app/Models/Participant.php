@@ -29,7 +29,7 @@ class Participant extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');//here attribute ....
     }
     // Relation avec les réservations
     public function reservations()

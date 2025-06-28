@@ -4,6 +4,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
+// Contrôleurs pour les participants
+use App\Http\Controllers\Participant\DashboardController as ParticipantDashboardController;
+use App\Http\Controllers\Participant\ReservationController as ParticipantReservationController;
+use App\Http\Controllers\Participant\BilletController;
+use App\Http\Controllers\Participant\EvenementController;
+use App\Http\Controllers\Participant\ProfilController;
 
 // Contrôleurs Admin
 //use App\Http\Controllers\Organisateur\OrganisateurController;
@@ -115,13 +121,40 @@ Route::middleware([
             else if ($userType === 'Organisateur') {
                  return redirect()->route('organisateur.dashboard');
              }
-             /* else if ($userType === 'participant') {
+             else if ($userType === 'Participant') {
                  return redirect()->route('participant.dashboard');
-             } */
+             }
         }
         // Si aucun type spécifique n'est trouvé ou si vous voulez un fallback général
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+
+    // --- Zone Participant (SANS middleware personnalisé) ---
+    Route::prefix('participant')->name('participant.')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [ParticipantDashboardController::class, 'index'])->name('dashboard');
+        
+        // Réservations
+        Route::get('/reservations', [ParticipantReservationController::class, 'index'])->name('reservations');
+        Route::get('/reservations/{id}', [ParticipantReservationController::class, 'show'])->name('reservations.show');
+        
+        // Billets
+        Route::get('/billets', [BilletController::class, 'index'])->name('billets');
+        Route::get('/billets/{id}', [BilletController::class, 'show'])->name('billets.show');
+        
+        // Événements
+        Route::get('/evenements', [EvenementController::class, 'index'])->name('evenements');
+        Route::get('/evenements/{id}', [EvenementController::class, 'show'])->name('evenements.show');
+        
+        // Profil
+        Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+        Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+        
+        // Paramètres et Support
+        Route::get('/parametres', [ProfilController::class, 'parametres'])->name('parametres');
+        Route::get('/support', [ProfilController::class, 'support'])->name('support');
+    });
 
     // --- Zone Admin ---
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
@@ -192,7 +225,7 @@ Route::middleware([
         ->name('reservation.store');
 
 
-        // NOUVEAU : Routes pour les actions sur les billets d'une réservation
+        // Routes pour les actions sur les billets d'une réservation
     Route::post('/reservation/{reservation}/send-tickets', [ReservationController::class, 'sendTickets'])
         ->name('reservation.send-tickets');
     Route::get('/reservation/{reservation}/download-tickets', [ReservationController::class, 'downloadTicketsPdf'])

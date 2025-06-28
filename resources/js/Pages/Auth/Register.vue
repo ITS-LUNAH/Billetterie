@@ -63,7 +63,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="firstName" value="firstName" />
+                <InputLabel for="firstName" value="First Name" />
                 <TextInput
                     id="firtName"
                     v-model="form.firstName"
@@ -77,7 +77,7 @@ const submit = () => {
             </div>
             <br>
             <div>
-                <InputLabel for="lastName" value="lastName" />
+                <InputLabel for="lastName" value="Last Name" />
                 <TextInput
                     id="lastName"
                     v-model="form.lastName"
@@ -158,7 +158,12 @@ const submit = () => {
                 </div>
             </div>
 
+            
             <div v-else-if="form.typeUser === 'Participant'">
+                <small class="text-gray-500">
+                    Fournir vos informations bancaires (compte bancaire, IBAN, RIB) permet un remboursement rapide en cas d’annulation ou de report de l’événement.
+                    Ces données sont sécurisées et ne seront utilisées qu’à cette fin.
+                </small>
                 <div class="mt-4">
                     <InputLabel for="compteBancaire" value="Nom du titulaire du compte bancaire" />
                     <TextInput id="compteBancaire" v-model="form.compteBancaire" type="text" class="mt-1 block w-full" />
