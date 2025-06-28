@@ -5,7 +5,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Organisateur;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class EvenementController extends Controller
 {
@@ -15,62 +14,91 @@ class EvenementController extends Controller
     }
 
     public function valider($id)
-{
-    $evenement = Event::findOrFail($id);
-    $evenement->estValide = true;
-    $evenement->save();
+    {
+        $evenement = Event::findOrFail($id);
+        $evenement->estValide = true;
+        $evenement->save();
 
-    return redirect()->back()->with('success', 'Événement validé avec succès.');
-}
-
-
+        return redirect()->back()->with('success', 'Événement validé avec succès.');
+    }
 
     public function edit($id)
     {
         $evenement = Event::findOrFail($id);
-        $organisateurs = Organisateur::all(); // Pour la liste déroulante des organisateurs
+        $organisateurs = Organisateur::all();
         return view('admin.evenements.edit', compact('evenement', 'organisateurs'));
     }
 
-    // Méthode pour mettre à jour un événement
+    // SOLUTION TEMPORAIRE - Update method sans validation stricte
     public function update(Request $request, $id)
     {
+        // DEBUG: Voir exactement ce qui est envoyé
+        \Log::info('Form data received:', $request->all());
+        
         $evenement = Event::findOrFail($id);
+        
+        // Validation de base sans idorganisateur pour le moment
         $request->validate([
             'titre' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'dateEvenement' => 'required|date',
+            //'dateEvenement' => 'required|date',
             'lieu' => 'required|string|max:255',
-            'typeplacement' => 'nullable|string|max:255',
             //'capacite' => 'required|integer|min:1',
-            'idorganisateur' => 'required|exists:organisateurs,idOrganisateur', 
-            // Ajoutez d'autres règles de validation si nécessaire
+            'typeplacement' => 'required|in:libre,numerote,debout,mixte',
         ]);
 
-        $evenement->update($request->all());
-        return redirect()->route('admin.evenements.index')->with('success', 'Événement mis à jour avec succès.');
+        // Gérer idorganisateur séparément
+        $idorganisateur = $request->input('idorganisateur');
+        
+        // Si idorganisateur est vide, essayer de garder l'ancienne valeur
+        if (empty($idorganisateur)) {
+            $idorganisateur = $evenement->idorganisateur;
+        }
+        
+        // Vérifier que l'organisateur existe
+        if ($idorganisateur && !Organisateur::where('idorganisateur', $idorganisateur)->exists()) {
+            return back()->withErrors(['idorganisateur' => 'L\'organisateur sélectionné n\'existe pas.'])
+                        ->withInput();
+        }
+
+        // Mettre à jour l'événement
+        $evenement->titre = $request->titre;
+        $evenement->description = $request->description;
+        //$evenement->dateEvenement = $request->dateEvenement;
+        $evenement->lieu = $request->lieu;
+        //$evenement->capacite = $request->capacite;
+        $evenement->typeplacement = $request->typeplacement;
+        $evenement->estValide = $request->has('estValide') ? true : false;
+        
+        // Mettre à jour idorganisateur seulement s'il n'est pas vide
+        if (!empty($idorganisateur)) {
+            $evenement->idorganisateur = $idorganisateur;
+        }
+        
+        $evenement->save();
+
+        return redirect()->route('admin.evenements.index')
+                        ->with('success', 'Événement mis à jour avec succès.');
     }
 
-    // Méthode pour supprimer un événement
+    // Method to delete an event
     public function destroy($id) {
-        $e = Event::findOrFail($id);
-        $e->delete();
+        $evenement = Event::findOrFail($id);
+        $evenement->delete();
         return back()->with('success', 'Événement supprimé.');
     }
 
-
     public function refuser($id)
-{
-    $evenement = Event::findOrFail($id);
-    $evenement->estValide = false;
-    $evenement->save();
+    {
+        $evenement = Event::findOrFail($id);
+        $evenement->estValide = false;
+        $evenement->save();
 
-    return redirect()->back()->with('success', 'Événement refusé avec succès.');
-}
+        return redirect()->back()->with('success', 'Événement refusé avec succès.');
+    }
 
-
-    // Nouvelle méthode pour basculer le statut (pour le toggle switch)
-   public function toggleValidation($id)
+    // Toggle validation method
+    public function toggleValidation($id)
     {
         try {
             $evenement = Event::findOrFail($id);
@@ -80,9 +108,9 @@ class EvenementController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $evenement->estValide
-                    ? 'Evenement validé avec succès' 
-                    : 'Evenement refuser avec succès',
-                'estActif' => $organisateur->estActif
+                    ? 'Événement validé avec succès' 
+                    : 'Événement refusé avec succès',
+                'estValide' => $evenement->estValide
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -91,15 +119,4 @@ class EvenementController extends Controller
             ], 500);
         }
     }
-
-    public function rules()
-{
-    return [
-        'nom' => 'required',        // <-- Ces lignes sont le problème
-        'prenom' => 'required',     // <-- Ces lignes sont le problème
-        'dateDebut' => 'required|date',
-        'dateFin' => 'required|date|after_or_equal:dateDebut',
-        // ... autres règles pour l'événement
-    ];
-}
 }

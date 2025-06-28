@@ -63,7 +63,7 @@ class EvenementController extends Controller
      */
     public function show($id)
     {
-        $evenement = Evenement::where('idevenement', $id)
+        $evenement = Event::where('idevenement', $id)
             ->where('estvalide', true)
             ->first();
 

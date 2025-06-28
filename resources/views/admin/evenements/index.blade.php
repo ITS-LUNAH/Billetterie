@@ -29,6 +29,7 @@
                             <th>Organisateur</th>
                             <th>Date</th>
                             <th>Lieu</th>
+                            <th>Type Placement</th>
                             <th>Statut Valide</th> {{-- Renommé pour être plus clair sur 'estValide' --}}
                             <th>Actions</th>
                         </tr>
@@ -41,6 +42,18 @@
                             <td>{{ $evenement->organisateur->nomComplet ?? 'N/A' }}</td>
                             <td>{{ \Carbon\Carbon::parse($evenement->dateEvenement)->format('d/m/Y H:i') }}</td>
                             <td>{{ $evenement->lieu }}</td>
+                            <td>
+                                @switch($evenement->typeplacement)
+                                    @case('libre')
+                                        <span class="badge badge-info">Placement Libre</span>
+                                        @break
+                                    @case('numerote')
+                                        <span class="badge badge-success">Placement Numéroté</span>
+                                        @break
+                                    @default
+                                        <span class="badge badge-light">Non défini</span>
+                                @endswitch
+                            </td>
                             <td>
                                 @if ($evenement->estValide)
                                     <span class="badge badge-success">Validé</span>
@@ -71,6 +84,7 @@
                                     data-date="{{ \Carbon\Carbon::parse($evenement->dateEvenement)->format('d/m/Y à H:i') }}"
                                     data-lieu="{{ $evenement->lieu }}"
                                     data-capacite="{{ $evenement->capacite }}"
+                                    data-typeplacement="{{ $evenement->typeplacement }}"
                                     data-estValide="{{ $evenement->estValide ? 'Validé' : 'Refusé' }}"
                                     data-created-at="{{ $evenement->created_at ? $evenement->created_at->format('d/m/Y à H:i') : 'N/A' }}"
                                     data-updated-at="{{ $evenement->updated_at ? $evenement->updated_at->format('d/m/Y à H:i') : 'N/A' }}"
@@ -119,6 +133,7 @@
                         <p><strong>Date & Heure :</strong> <span id="modalDate"></span></p>
                         <p><strong>Lieu :</strong> <span id="modalLieu"></span></p>
                         <p><strong>Capacité :</strong> <span id="modalCapacite"></span></p>
+                        <p><strong>Type de Placement :</strong> <span id="modalTypePlacement"></span></p>
                         <p><strong>Statut Valide :</strong> <span id="modalEstValide"></span></p>
                     </div>
                     <div class="col-md-6">
@@ -146,6 +161,22 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+    // Fonction pour afficher le type de placement formaté
+    function formatTypePlacement(type) {
+        switch(type) {
+            case 'libre':
+                return 'Placement Libre';
+            case 'numerote':
+                return 'Placement Numéroté';
+            case 'debout':
+                return 'Debout';
+            case 'mixte':
+                return 'Mixte';
+            default:
+                return 'Non défini';
+        }
+    }
+
     // Fonction pour afficher une alerte temporaire (inchangée)
     function showTemporaryAlert(message, type = 'success') {
         var alertHtml = `
@@ -162,7 +193,7 @@
         }, 5000);
     }
 
-    // Script pour la modale de détails de l'événement (inchangé)
+    // Script pour la modale de détails de l'événement
     $('#evenementDetailModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var id = button.data('id');
@@ -172,6 +203,7 @@
         var date = button.data('date');
         var lieu = button.data('lieu');
         var capacite = button.data('capacite');
+        var typeplacement = button.data('typeplacement');
         var estValide = button.data('estvalide');
         var createdAt = button.data('created-at');
         var updatedAt = button.data('updated-at');
@@ -184,6 +216,7 @@
         modal.find('#modalDate').text(date);
         modal.find('#modalLieu').text(lieu);
         modal.find('#modalCapacite').text(capacite);
+        modal.find('#modalTypePlacement').text(formatTypePlacement(typeplacement));
         modal.find('#modalEstValide').text(estValide);
         modal.find('#modalCreatedAt').text(createdAt);
         modal.find('#modalUpdatedAt').text(updatedAt);
@@ -241,13 +274,4 @@
 @push('styles')
 {{-- Styles CSS pour Font Awesome (à inclure dans votre layout principal de préférence) --}}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-{{-- Les styles du toggle switch ne sont plus nécessaires et peuvent être supprimés --}}
-@endpush
-
-@push('styles')
-{{-- Styles CSS pour Font Awesome (à inclure dans votre layout principal de préférence) --}}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-
-{{-- Les styles CSS pour le Toggle Switch NE SONT PLUS NÉCESSAIRES si vous utilisez des icônes pour le statut --}}
-{{-- et peuvent être supprimés de cette section. --}}
 @endpush

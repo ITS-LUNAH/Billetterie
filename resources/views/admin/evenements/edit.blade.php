@@ -40,9 +40,18 @@
                     <input type="text" class="form-control" id="lieu" name="lieu" value="{{ old('lieu', $evenement->lieu) }}" required>
                 </div>
 
-                <div class="form-group">
+                <!--<div class="form-group">
                     <label for="capacite">Capacité</label>
                     <input type="number" class="form-control" id="capacite" name="capacite" value="{{ old('capacite', $evenement->capacite) }}" required min="1">
+                </div>-->
+
+                <div class="form-group">
+                    <label for="typeplacement">Type de Placement</label>
+                    <select class="form-control" id="typeplacement" name="typeplacement" required>
+                        <option value="">-- Sélectionner un type de placement --</option>
+                        <option value="libre" {{ old('typeplacement', $evenement->typeplacement) == 'libre' ? 'selected' : '' }}>Placement Libre</option>
+                        <option value="numerote" {{ old('typeplacement', $evenement->typeplacement) == 'numerote' ? 'selected' : '' }}>Placement Numéroté</option>
+                    </select>
                 </div>
 
                 <div class="form-group">

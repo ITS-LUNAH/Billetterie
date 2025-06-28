@@ -173,6 +173,8 @@ Route::middleware([
         // Événements
         Route::get('/evenements', [AdminEvenementController::class, 'index'])->name('evenements.index');
         // Le 'show' est souvent omis si vous utilisez une modale pour les détails
+        Route::put('/admin/evenements/{id}', [EvenementController::class, 'update'])->name('admin.evenements.update');
+Route::post('/admin/evenements/{id}/toggle-validation', [EvenementController::class, 'toggleValidation'])->name('admin.evenements.toggleValidation');
         Route::resource('evenements', App\Http\Controllers\Admin\EvenementController::class)->except(['show']);
         Route::post('/evenements/{id}/valider', [AdminEvenementController::class, 'valider'])->name('evenements.valider');
         Route::post('/evenements/{id}/refuser', [AdminEvenementController::class, 'refuser'])->name('evenements.refuser');
