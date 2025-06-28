@@ -52,7 +52,7 @@ const downloadTicketsPdf = () => {
             </h2>
         </template>
 
-        <div class="min-h-screen bg-purple-100 py-8">
+        <div class="min-h-screen bg-gray-100 py-8">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 <!-- Message de bienvenue -->

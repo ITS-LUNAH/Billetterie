@@ -159,26 +159,12 @@ defineProps({
                                     </svg>
                                 </div>
                                 
-                                <Link 
-                                    :href="route('participant.billets.show', billet.id)"
-                                    class="block w-full text-center bg-indigo-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-indigo-700"
-                                >
-                                    Voir QR Code
-                                </Link>
+                                
+                                
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pagination -->
-                    <div v-if="billets.links" class="px-6 py-4 border-t border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <div class="text-sm text-gray-700">
-                                Affichage de {{ billets.from }} à {{ billets.to }} 
-                                sur {{ billets.total }} résultats
-                            </div>
-                            
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

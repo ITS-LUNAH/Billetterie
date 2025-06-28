@@ -65,14 +65,15 @@ const performSearch = () => {
       
 
     <div class="bg-transparent-400 text-black/50 text-black/50">
-    <div id="animated-background" class="absolute -left-20 top-0 max-w-[877px] w-full h-full animate-pulse"></div>        <div class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
+    <div id="animated-background" class="absolute -left-20 top-0 max-w-[877px] w-full h-full animate-pulse"></div>        
+    <div class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
             <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
 
               
               <!-- Section Catégories -->
-    <section class="py-8 mt-6">
+    <section class=" py-8 mt-1">
       <div class="max-w-7xl mx-auto px-4">
-        <div class="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
+        <div class="bg-gray/800 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
           <h2 class="text-2xl font-bold text-white text-center mb-6">
             Explorez par catégorie
           </h2>
@@ -90,11 +91,11 @@ const performSearch = () => {
         </div>
       </div>
     </section>
-                <main class="mt-4">
+                <main class="mt-1">
                     <div class="grid grid-cols-1 gap-4">
 
                     <!-- Section Evenements a venir -->
-                    <section id="upcoming-events-section" class="py-16 mt-10">
+                    <section id="upcoming-events-section" class="py-16 mt-1">
                     
                     <h1 class="text-4xl md:text-6xl font-bold text-white text-center mb-6">
                         Événements à Venir
@@ -148,7 +149,7 @@ const performSearch = () => {
             </div>
 
             <!-- Barre de recherche -->
-            <div class="mb-16">
+            <div class="mb-1">
                 <EventSearchBar />
             </div>
 
@@ -156,7 +157,7 @@ const performSearch = () => {
             </section>
 
                     <!-- Section comment ca marche/demo -->
-                    <section id="how-it-works-section" class="py-16 bg-transparent mt-12">
+                    <section id="how-it-works-section" class="py-16 bg-transparent mt-1">
                     <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
                         <h2 class="text-4xl font-extrabold text-white mb-4">
                             Comment ça marche

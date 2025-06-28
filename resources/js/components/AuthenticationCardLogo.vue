@@ -5,8 +5,8 @@ import { Link } from '@inertiajs/vue3';
 <template>
     <Link :href="'/'">
         <img src="/images/EVUP.gif"
-    width="80"
-    height="80"
+    width="200"
+    height="200"
     class="rounded-circle img-fluid"
     alt="EVUP-LOGO">
     </Link>

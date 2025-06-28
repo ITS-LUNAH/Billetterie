@@ -24,8 +24,8 @@ const smoothScroll = (e) => {
       <Link :href="'/'">
         <img
           src="/images/EVUP.gif"
-          width="100"
-          height="100"
+          width="150"
+          height="150"
           class="rounded-circle img-fluid"
           alt="EVUP-LOGO"
         />

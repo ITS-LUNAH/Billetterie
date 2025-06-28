@@ -10,7 +10,7 @@ const user = computed(() => page.props.auth?.user);
 
 const navigation = [
     {
-        name: 'Tableau de bord',
+        name: 'Activités',
         href: '/participant/dashboard',
         icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z',
         current: window.location.pathname === '/participant/dashboard'
@@ -30,17 +30,11 @@ const navigation = [
         badge: 5
     },
     {
-        name: 'Événements',
+        name: 'Mes favoris',
         href: '/participant/evenements',
         icon: 'M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h4a2 2 0 012 2v1m-6 0h8m-8 0v10a2 2 0 002 2h4a2 2 0 002-2V7m-8 0H4a2 2 0 00-2 2v10a2 2 0 002 2h4m4-10v10a2 2 0 002 2h4a2 2 0 002-2V9a2 2 0 00-2-2h-4z',
         current: window.location.pathname === '/participant/evenements'
     },
-    {
-        name: 'Mon Profil',
-        href: '/participant/profil',
-        icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-        current: window.location.pathname === '/participant/profil'
-    }
 ];
 
 const secondaryNavigation = [
