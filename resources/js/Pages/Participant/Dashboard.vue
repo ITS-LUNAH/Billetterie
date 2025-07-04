@@ -11,7 +11,7 @@ const props = defineProps({
     error: String,
 });
 
-// --- Nouvelle fonction pour envoyer les billets par mail ---
+// --- Fonction pour envoyer les billets par mail ---
 const sendTicketsByEmail = async () => {
     if (!props.reservation || !props.reservation.idreservation) {
         alert('Erreur: ID de réservation manquant.');
@@ -19,8 +19,6 @@ const sendTicketsByEmail = async () => {
     }
 
     try {
-        // Appelle la nouvelle route Laravel pour envoyer les e-mails
-        // Utilisez la méthode POST car elle modifie l'état (envoi d'email)
         const response = await axios.post(route('reservation.send-tickets', { reservation: props.reservation.idreservation }));
         alert(response.data.message); // Affiche le message de succès/échec du backend
     } catch (error) {
@@ -29,14 +27,12 @@ const sendTicketsByEmail = async () => {
     }
 };
 
-// --- Nouvelle fonction pour télécharger les billets (PDF) ---
+// ---fonction pour télécharger les billets (PDF) ---
 const downloadTicketsPdf = () => {
     if (!props.reservation || !props.reservation.idreservation) {
         alert('Erreur: ID de réservation manquant.');
         return;
     }
-    // Ouvre la nouvelle route Laravel dans un nouvel onglet pour télécharger le PDF
-    // Le navigateur gérera le téléchargement ou l'affichage du PDF.
     window.open(route('reservation.download-tickets', { reservation: props.reservation.idreservation }), '_blank');
 };
 

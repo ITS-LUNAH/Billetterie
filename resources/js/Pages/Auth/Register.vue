@@ -63,7 +63,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="firstName" value="First Name" />
+                <InputLabel for="firstName" value="Prénom" />
                 <TextInput
                     id="firtName"
                     v-model="form.firstName"
@@ -77,7 +77,7 @@ const submit = () => {
             </div>
             <br>
             <div>
-                <InputLabel for="lastName" value="Last Name" />
+                <InputLabel for="lastName" value="nom" />
                 <TextInput
                     id="lastName"
                     v-model="form.lastName"
@@ -104,7 +104,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Mot de passe" />
                 <TextInput
                     id="password"
                     v-model="form.password"
@@ -117,7 +117,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <InputLabel for="password_confirmation" value="Confirmer mot de Passe" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"

@@ -173,14 +173,13 @@ const getButtonText = () => {
 
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-gray-700">Prix à partir de</span>
-                            <span class="text-3xl font-bold " style="color: #6B4E71;">{{ evenement.prix }} MAD</span>
+                            <span class="text-3xl font-bold text-indigo-600">{{ evenement.prix }} MAD</span>
                         </div>
 
                         <div class="mt-6 self-end">
                         <button
                             @click="handleReservationSubmission"
-                            class="w-full py-3 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors mb-4"
-                            style="background-color: #6B4E71;"
+                            class="w-full py-3 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors mb-4 bg-indigo-600 text-white"
                         >
                             {{ getButtonText() }}
                         </button>

@@ -26,7 +26,6 @@
         </div>
         <div class="ticket-details">
             <p><strong>Événement :</strong> {{ $billet->reservation->evenement->titre }}</p>
-            <p><strong>Nom du Client :</strong> {{ $billet->reservation->user->firsName }} {{ $billet->reservation->user->lastName }}</p>
             <p><strong>Date :</strong> {{ \Carbon\Carbon::parse($billet->dateEvenement->datedebut)->translatedFormat('l d F Y à H:i') }}</p>
             <p><strong>Lieu :</strong> {{ $billet->reservation->evenement->lieu }}</p>
             <p><strong>Zone :</strong> {{ $billet->zone->nomzone }}</p>

@@ -6,8 +6,8 @@ use App\Models\Reservation;
 use App\Models\Billet;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Stripe\Stripe; // Importe la classe principale de Stripe
-use Stripe\Checkout\Session; // Importe la classe Session de Stripe Checkout
+use Stripe\Stripe; 
+use Stripe\Checkout\Session; 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
@@ -89,7 +89,7 @@ class PaymentController extends Controller
                     'idreservation' => $reservation->idreservation, // Utile pour identifier la réservation via les webhooks
                 ],
                 // Optionnel: Pré-remplir l'e-mail de l'utilisateur s'il est connecté
-                //'customer_email' => 'lunahr124@gmail.com' ?? null,
+                //'customer_email' => 'user@gmail.com' ?? null,
             ]);
 
             Log::info('Session Stripe créée avec succès:', ['sessionId' => $checkoutSession->id]);

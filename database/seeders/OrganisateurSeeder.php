@@ -27,7 +27,7 @@ class OrganisateurSeeder extends Seeder
         ]);
 
         Organisateur::create([
-            'user_id' => $organisateurUser->id,// Assign the ID from the newly created User to the 'user_id' foreign key
+            'user_id' => $organisateurUser->id,
             'societe' => 'maroc web',
             'secteurActivite' => 'le web',
             'ICE' => '1111',

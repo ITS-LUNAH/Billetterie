@@ -42,8 +42,6 @@ class TicketsMail extends Mailable
      */
     public function content(): Content
     {
-        // Vous pouvez utiliser une vue pour le corps de l'e-mail ou simplement du texte/HTML.
-        // Créez un fichier Blade dans resources/views/emails/tickets.blade.php
         return new Content(
             view: 'emails.tickets',
             with: [

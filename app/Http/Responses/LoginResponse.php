@@ -14,8 +14,7 @@ class LoginResponse implements LoginResponseContract
 
         // Vérifiez si l'utilisateur existe et a la propriété 'typeuser'
     if ($user && property_exists($user, 'typeUser')) {
-        $userType = $user->typeUser; // Assurez-vous que c'est 'typeuser' en minuscules ici aussi
-
+        $userType = $user->typeUser; 
         switch ($userType) {
             case 'Organisateur':
                 return '/resources/js/pages/Organisateur/Dashboard.vue';

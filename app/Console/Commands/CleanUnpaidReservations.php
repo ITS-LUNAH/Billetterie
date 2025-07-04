@@ -13,28 +13,26 @@ use Illuminate\Support\Facades\Log;
 class CleanUnpaidReservations extends Command
 {
     /**
-     * Le nom de la commande. C'est ce que vous taperez pour l'exécuter.
+     * Le nom de la commande.
      * @var string
      */
     protected $signature = 'reservations:clean-unpaid';
 
     /**
-     * Une courte description de ce que fait la commande.
+     * Une courte description de ce que fait la commande
      * @var string
      */
     protected $description = 'Supprime les réservations non payées et leurs billets associés.';
 
     /**
-     * Exécute la logique de la commande.
+     * Exécute la logique de la commande
      */
     public function handle()
     {
-        // 1. Délai d'expiration : Les réservations de plus de 10 minutes non payées
-        $expirationTime = Carbon::now()->subMinutes(1); // Vous pouvez changer 10 en moins pour tester
+        // Délai d'expiration : Les réservations de plus de 1 minutes non payées (1min juste pour le test)
+        $expirationTime = Carbon::now()->subMinutes(1);
 
-        // 2. Trouver les réservations à supprimer :
-        // On cherche les réservations qui sont "en attente" DE PAIEMENT
-        // ET qui ont été créées il y a plus de 10 minutes.
+        // On cherche les réservations qui sont "en attente"
         $unpaidReservations = Reservation::where('etat', 'en attente')
                                          ->where('created_at', '<', $expirationTime)
                                          ->get();
@@ -50,9 +48,6 @@ class CleanUnpaidReservations extends Command
             DB::beginTransaction(); // Démarre une transaction pour que tout soit fait ou annulé
             try {
                 $reservationId = $reservation->idreservation;
-
-                // Avertissement : Assurez-vous que la relation 'zone' est correcte dans Billet.php
-                // Sinon, la mise à jour des places peut échouer si un billet a une zone invalide.
 
                 // Récupérer et mettre à jour les places dans DateEvenement avant de supprimer les billets
                 $billetsForReservation = Billet::where('idreservation', $reservationId)->get();

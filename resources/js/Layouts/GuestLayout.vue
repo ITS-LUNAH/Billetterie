@@ -277,7 +277,7 @@ button, a {
 }
 /* Styles pour le fond animé */
 #background {
-    background: linear-gradient(135deg, #3F51B5 , #000000, #FFC107);
+    background: linear-gradient(135deg, #3F51B5 , #272727, #FFC107);
     background-size: 400% 400%;
     animation: gradientShift 15s ease infinite;
 }

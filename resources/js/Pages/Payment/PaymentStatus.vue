@@ -11,7 +11,7 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    reservation: { // Les détails de la réservation (facultatif, pour affichage)
+    reservation: { // Les détails de la réservation
         type: Object,
         default: null,
     },
@@ -27,7 +27,7 @@ const iconPath = computed(() => isSuccess.value
     : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />' // X mark circle
 );
 
-// --- Nouvelle fonction pour envoyer les billets par mail ---
+// ---La fonction pour envoyer les billets par mail ---
 const sendTicketsByEmail = async () => {
     if (!props.reservation || !props.reservation.idreservation) {
         alert('Erreur: ID de réservation manquant.');
@@ -35,8 +35,6 @@ const sendTicketsByEmail = async () => {
     }
 
     try {
-        // Appelle la nouvelle route Laravel pour envoyer les e-mails
-        // Utilisez la méthode POST car elle modifie l'état (envoi d'email)
         const response = await axios.post(route('reservation.send-tickets', { reservation: props.reservation.idreservation }));
         alert(response.data.message); // Affiche le message de succès/échec du backend
     } catch (error) {
@@ -45,14 +43,12 @@ const sendTicketsByEmail = async () => {
     }
 };
 
-// --- Nouvelle fonction pour télécharger les billets (PDF) ---
+// --- Lafonction pour télécharger les billets (PDF) ---
 const downloadTicketsPdf = () => {
     if (!props.reservation || !props.reservation.idreservation) {
         alert('Erreur: ID de réservation manquant.');
         return;
     }
-    // Ouvre la nouvelle route Laravel dans un nouvel onglet pour télécharger le PDF
-    // Le navigateur gérera le téléchargement ou l'affichage du PDF.
     window.open(route('reservation.download-tickets', { reservation: props.reservation.idreservation }), '_blank');
 };
 
@@ -73,7 +69,6 @@ const downloadTicketsPdf = () => {
                 <p class="text-gray-600"><strong>ID Réservation:</strong> {{ reservation.idreservation }}</p>
                 <p class="text-gray-600"><strong>Statut:</strong> <span class="font-bold">{{ reservation.etat }}</span></p>
                 <p class="text-gray-600"><strong>Date:</strong> {{ new Date(reservation.datereservation).toLocaleDateString() }}</p>
-                <!-- Ajoutez plus de détails pertinents de la réservation si vous les passez -->
                  <div class="mt-6 flex flex-col space-y-3">
                     <button @click="sendTicketsByEmail" class="w-full px-6 py-3 font-semibold rounded-md text-white bg-indigo-600 hover:bg-blue-700 transition-colors duration-200">
                         Envoyer mes billets par email
@@ -92,7 +87,3 @@ const downloadTicketsPdf = () => {
         </div>
     </div>
 </template>
-
-<style scoped>
-/* Les styles Tailwind CSS sont suffisants ici. */
-</style>

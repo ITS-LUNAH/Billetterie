@@ -36,7 +36,7 @@ class Reservation extends Model
 
     public function evenement()
     {
-        return $this->belongsTo(Event::class, 'idevenement', 'idevenement'); // Assurez idevenement est correct
+        return $this->belongsTo(Event::class, 'idevenement', 'idevenement');
     }
 
     // Méthode pour obtenir le montant total

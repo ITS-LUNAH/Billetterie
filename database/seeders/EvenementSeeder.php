@@ -24,8 +24,9 @@ class EvenementSeeder extends Seeder
                 'bandeannonce' => 'image1.jpg',
                 'typeplacement' => 'Libre',
                 'estvalide' => true,
-                'idorganisateur' => 1, // Correspond à l'idOrganisateur de 'EventPro SARL' dans OrganisateurSeeder
+                'idorganisateur' => 1,
                 'prixbase' => 500.00,
+                'categorie' => 'Conférence', // Ajout de la catégorie
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -37,8 +38,9 @@ class EvenementSeeder extends Seeder
                 'bandeannonce' => 'image2.jpg',
                 'typeplacement' => 'Libre',
                 'estvalide' => true,
-                'idorganisateur' => 1, // Correspond à l'idOrganisateur de 'MusicFest Production'
+                'idorganisateur' => 1, 
                 'prixbase' => 200.00,
+                'categorie' => 'Festival', // Ajout de la catégorie
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -52,6 +54,7 @@ class EvenementSeeder extends Seeder
                 'estvalide' => true,
                 'idorganisateur' => 1,
                 'prixbase' => 150.00,
+                'categorie' => 'Théâtre', // Ajout de la catégorie
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -62,9 +65,10 @@ class EvenementSeeder extends Seeder
                 'lieu' => 'Espace d\'Exposition', // Descriptif
                 'bandeannonce' => 'image4.jpg',
                 'typeplacement' => 'Libre',
-                'estvalide' => true, // Cet événement n'est pas encore validé
+                'estvalide' => false, // Cet événement n'est pas encore validé
                 'idorganisateur' => 1,
-                'prixbase' => 100.00, // Événement gratuit
+                'prixbase' => 100.00, 
+                'categorie' => 'Emploi', // Ajout de la catégorie
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

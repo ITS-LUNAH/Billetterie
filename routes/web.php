@@ -63,9 +63,9 @@ Route::get('/', function () {
         ->with(['dates' => function($query) {
             $query->where('dateDebut', '>=', Carbon::today())
                   ->orderBy('dateDebut', 'asc');
-        }, 'dates.lieu']) // Chargez les dates et les lieux liés à ces dates
-        ->has('dates') // N'incluez que les événements qui ont au moins une date future valide
-        ->limit(10) // Limitez à 10 événements comme dans l'exemple
+        }, 'dates.lieu']) // Charger les dates et les lieux liés à ces dates
+        ->has('dates') // N'incluer que les événements qui ont au moins une date future valide
+        ->limit(5) //
         ->get()
         ->map(function ($event) {
             // Formater les données pour le frontend
@@ -74,14 +74,16 @@ Route::get('/', function () {
                 'id' => $event->idevenement,
                 'titre' => $event->titre,
                 'description' => $event->description,
-                'image' => $event->bandeannonce ? asset('storage/events-photos/'. $event->bandeannonce) : null, // Assurez-vous que l'image est accessible via storage:link
+                'image' => $event->bandeannonce ? asset('storage/events-photos/'. $event->bandeannonce) : null,
                 'prix' => $event->prixbase,
+                'categorie' => $event->categorie,
                 'lieu' => $firstUpcomingDate->lieu->ville . ' - ' . $firstUpcomingDate->lieu->adresse, // Concaténer ville et adresse
                 'date' => $firstUpcomingDate->datedebut->translatedFormat('d M Y') . ' à ' . Carbon::parse($firstUpcomingDate->heuredebut)->format('H:i'), // Formater la date et l'heure
-                // Ajoutez d'autres infos si nécessaire pour les cartes
+                // Ajouter d'autres infos si nécessaire pour les cartes
             ];
         });
 
+        
 
     return Inertia::render('Accueil', [
         'canLogin' => Route::has('login'),
@@ -125,12 +127,12 @@ Route::middleware([
                  return redirect()->route('participant.dashboard');
              }
         }
-        // Si aucun type spécifique n'est trouvé ou si vous voulez un fallback général
+        // Si aucun type spécifique n'est trouvé
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
 
-    // --- Zone Participant (SANS middleware personnalisé) ---
+    // --- Zone Participant ---
     Route::prefix('participant')->name('participant.')->group(function () {
         // Dashboard
         Route::get('/dashboard', [ParticipantDashboardController::class, 'index'])->name('dashboard');

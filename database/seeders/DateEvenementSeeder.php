@@ -24,9 +24,9 @@ class DateEvenementSeeder extends Seeder
                 'datedebut' => '2025-09-10 09:00:00',
                 'heuredebut' => '09:00:00',
                 'heureouvertureportes' => '08:30:00',
-                'placesdisponibles' => 800, // Total = 3000 (capaciteMax du lieu 2)
+                'placesdisponibles' => 800, 
                 'placesvendues' => 120,
-                'idevenement' => $evenementTechMaroc->idevenement, // << CORRIGEZ EN idEvenement
+                'idevenement' => $evenementTechMaroc->idevenement, 
                 'idlieu' => $lieuLeGrandThéâtre->idlieu,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -35,9 +35,9 @@ class DateEvenementSeeder extends Seeder
                 'datedebut' => '2025-08-20 08:00:00',
                 'heuredebut' => '08:00:00',
                 'heureouvertureportes' => '07:30:00',
-                'placesdisponibles' => 800, // Total = 3000 (capaciteMax du lieu 2)
+                'placesdisponibles' => 800, 
                 'placesvendues' => 120,
-                'idevenement' => $evenementTechMaroc->idevenement, // << CORRIGEZ EN idEvenement
+                'idevenement' => $evenementTechMaroc->idevenement,
                 'idlieu' => $lieuLeGrandThéâtre->idlieu,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -47,9 +47,9 @@ class DateEvenementSeeder extends Seeder
                 'heuredebut' => '18:00:00',
                 'heureouvertureportes' => '17:00:00',
                 'placesvendues' => 80,
-                'placesdisponibles' => 200, // Total = 10000 (capaciteMax du lieu 3)
-                'idevenement' => 2, // Festival Gnaoua Vibes
-                'idlieu' => 3,      // Stade Al Amal (Casablanca)
+                'placesdisponibles' => 200, 
+                'idevenement' => 2, 
+                'idlieu' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -58,9 +58,9 @@ class DateEvenementSeeder extends Seeder
                 'heuredebut' => '18:00:00',
                 'heureouvertureportes' => '17:00:00',
                 'placesvendues' => 500,
-                'placesdisponibles' => 500, // Total = 10000 (capaciteMax du lieu 3)
-                'idevenement' => 2, // Festival Gnaoua Vibes (deuxième jour)
-                'idlieu' => 3,      // Stade Al Amal (Casablanca)
+                'placesdisponibles' => 500, 
+                'idevenement' => 2,
+                'idlieu' => 3, 
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -69,9 +69,9 @@ class DateEvenementSeeder extends Seeder
                 'heuredebut' => '20:00:00',
                 'heureouvertureportes' => '19:30:00',
                 'placesvendues' => 100,
-                'placesdisponibles' => 400, // Total = 500 (capaciteMax du lieu 4)
-                'idevenement' => 3, // Pièce de Théâtre : L'Envol
-                'idlieu' => 4,      // Centre Culturel (Fès)
+                'placesdisponibles' => 400,
+                'idevenement' => 3, 
+                'idlieu' => 4, 
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -80,9 +80,9 @@ class DateEvenementSeeder extends Seeder
                 'heuredebut' => '20:00:00',
                 'heureouvertureportes' => '19:30:00',
                 'placesvendues' => 80,
-                'placesdisponibles' => 420, // Total = 500 (capaciteMax du lieu 4)
-                'idevenement' => 3, // Pièce de Théâtre : L'Envol (deuxième jour)
-                'idlieu' => 4,      // Centre Culturel (Fès)
+                'placesdisponibles' => 420,
+                'idevenement' => 3,
+                'idlieu' => 4,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

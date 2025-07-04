@@ -33,11 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     // C'est la section pour le planificateur de tâches
-    ->withSchedule(function (Schedule $schedule) { // <-- MODIFICATION ICI
-        // Planifier notre commande de nettoyage :
+    ->withSchedule(function (Schedule $schedule) {
+        // Planifier la commande de nettoyage :
         // Elle sera vérifiée toutes les minutes par 'schedule:work'.
-        // Elle agira si des réservations de plus de 10 minutes sont "en attente".
+        // Elle agira si des réservations de plus de 10minutes (ou 1 selon le nombre choisis)  sont "en attente".
         $schedule->command('reservations:clean-unpaid')->everyMinute();
-        // ^^^ 'everyMinute()' est idéal pour les tests en développement.
-    }) // <-- FIN DE LA SECTION DU PLANIFICATEUR
+        // 'everyMinute()' est idéal pour les tests en développement.
+    }) 
     ->create();

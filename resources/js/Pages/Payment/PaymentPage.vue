@@ -17,10 +17,6 @@ const props = defineProps({
 // onMounted est un hook de cycle de vie Vue.js qui s'exécute une fois que le composant est monté dans le DOM.
 onMounted(async () => {
     try {
-        // La ligne `const stripe = Stripe(props.stripePublishableKey);`
-        // et la ligne `await new Promise(...)` seront supprimées.
-        // On s'attend à ce que 'Stripe' soit déjà disponible globalement.
-
         // --- Initialiser Stripe avec votre clé publiable ---
         // Assurez-vous que 'Stripe' est globalement disponible (chargé par le layout principal)
         const stripe = Stripe(props.stripePublishableKey); // Cette ligne reste
@@ -32,8 +28,6 @@ onMounted(async () => {
 
         if (error) {
             console.error('Erreur lors de la redirection vers Stripe Checkout:', error);
-            // Utilisez window.location.href pour une redirection complète en cas d'échec critique
-            // Assurez-vous que 'route' est disponible ou utilisez une URL hardcodée si besoin.
             window.location.href = route('payment.cancel', { reservation: props.sessionId });
         }
     } catch (e) {
@@ -56,8 +50,3 @@ onMounted(async () => {
         </div>
     </div>
 </template>
-
-<style scoped>
-/* Les styles Tailwind CSS sont suffisants ici. */
-/* Si vous avez besoin de styles plus complexes, ajoutez-les ici. */
-</style>

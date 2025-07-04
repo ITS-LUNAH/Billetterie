@@ -114,6 +114,11 @@ const performSearch = () => {
                                 <h3 class="font-bold text-2xl text-gray-900 mb-3">{{ event.titre }}</h3>
                                 
                                 <div class="flex items-center text-gray-700 mb-5">
+                                  <span class="bg-indigo-100 text-indigo-700 font-semibold px-3 py-1 rounded-full text-lg shadow-sm">
+                                    {{ event.categorie }}
+                                  </span>
+                                </div>
+                                <div class="flex items-center text-gray-700 mb-5">
                                     <i class="fa-solid fa-location-dot w-5 h-5 mr-2 text-indigo-500"></i>
                                     <span>{{ event.lieu }}</span>
                                 </div>
@@ -124,6 +129,7 @@ const performSearch = () => {
                                 <div class="flex items center text-gray-700 mb-5">
                                     <span class="text-indigo-600 font-bold text-xl">{{ event.prix }} MAD</span>
                                 </div>
+                                
                                 <div class="flex justify-between items-center mt-9 ">
                                     <Link 
                                     :href="route('evenement.show', event.id)" 

@@ -24,16 +24,10 @@ class ParticipantMiddleware
         // Vérifier si l'utilisateur est un participant
         $user = Auth::user();
         
-        // Adapter selon votre structure de base de données
-        // Option 1: Si vous avez un champ user_type dans la table users
+        
         if ($user->typeUser !== 'Participant') {
             abort(403, 'Accès refusé. Vous devez être un participant.');
         }
-
-        // Option 2: Si vous vérifiez via la relation avec la table participants
-        // if (!$user->participant) {
-        //     abort(403, 'Accès refusé. Vous devez être un participant.');
-        // }
 
         return $next($request);
     }

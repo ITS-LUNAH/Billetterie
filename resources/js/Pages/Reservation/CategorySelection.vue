@@ -10,8 +10,6 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    // Les zones initiales (pour la date par défaut) sont passées ici.
-    // Elles ne sont utilisées que pour l'initialisation.
      zones: {
         type: Array,
         default: () => [], 
@@ -71,7 +69,7 @@ const initializeFormTickets = (zonesData) => {
 const form = useForm({
     evenement_id: props.evenement.idevenement,
     date_id: props.evenement.date_id,
-    tickets: initializeFormTickets(currentZones.value), // Initialise avec les zones par défaut
+    tickets: initializeFormTickets(currentZones.value),
     type: 'Libre',
 });
 
@@ -161,12 +159,7 @@ const submit = () => {
 
     form.post(route('reservation.store'), {
         onSuccess: () => {
-            // !!! TRÈS IMPORTANT : LE CONTRÔLEUR LARAVEL GÈRE LA REDIRECTION VERS LA PAGE DE PAIEMENT.
-            // Inertia intercepte cette redirection et navigue côté client.
-            // Il n'y a PAS besoin de router.visit() ou de alert() ici.
-            // Toute alerte ici serait affichée AVANT que la navigation ne commence.
-            // Si vous voulez un message de succès, il est préférable de l'afficher sur la page de paiement.
-        },
+            },
         onError: (errors) => {
             console.error('Erreur de soumission:', errors);
             let errorMessage = 'Une erreur est survenue lors de la réservation.';

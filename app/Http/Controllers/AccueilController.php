@@ -20,7 +20,7 @@ class AccueilController extends Controller
                     ->orderBy('dateDebut', 'asc');
             }, 'dates.lieu'])
             ->has('dates')
-            ->limit(10) // Limite à 10 événements
+            ->limit(9) // Limite à 9 événements
             ->get()
             ->map(function ($event) {
                 $firstUpcomingDate = $event->dates->first();

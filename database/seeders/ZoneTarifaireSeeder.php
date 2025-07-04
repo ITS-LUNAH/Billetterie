@@ -25,28 +25,27 @@ class ZoneTarifaireSeeder extends Seeder
         ZoneTarifaire::create([
             'nomzone' => 'Standard',
             'tarif' => 150.00,
-            'capacite' => 100, // Exemple: 100 places dans la zone standard
-            'couleur' => '#90EE90', // Vert clair
-            'idlieu' => $lieuRabat->idlieu, // Lier à un lieu si vous avez la colonne
+            'capacite' => 100, 
+            'couleur' => '#90EE90', 
+            'idlieu' => $lieuRabat->idlieu,
         ]);
 
         ZoneTarifaire::create([
             'nomzone' => 'VIP',
             'tarif' => 400.00,
-            'capacite' => 20, // Exemple: 20 places dans la zone VIP
-            'couleur' => '#ADD8E6', // Bleu clair
+            'capacite' => 20, 
+            'couleur' => '#ADD8E6', 
             'idlieu' => $lieuRabat->idlieu,
         ]);
 
         ZoneTarifaire::create([
             'nomzone' => 'Premium',
             'tarif' => 250.00,
-            'capacite' => 50, // Exemple: 50 places dans la zone premium
-            'couleur' => '#FFD700', // Or
+            'capacite' => 50,
+            'couleur' => '#FFD700', 
             'idlieu' => $lieuRabat->idlieu,
         ]);
 
-        // Si vous avez d'autres lieux, créez des zones pour eux ou rendez les zones génériques
     }
 
     

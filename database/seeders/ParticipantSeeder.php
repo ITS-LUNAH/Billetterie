@@ -26,7 +26,7 @@ class ParticipantSeeder extends Seeder
         ]);
 
         Participant::create([
-            'user_id' => $participantUser->id,// Assign the ID from the newly created User to the 'user_id' foreign key
+            'user_id' => $participantUser->id,
             'compteBancaire' => 'CIH',
             'IBAN' => '2222',
             'RIB' => '2222',
