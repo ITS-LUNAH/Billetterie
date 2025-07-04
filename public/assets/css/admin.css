@@ -1,8 +1,4 @@
-/* ============================================
-   EVUP Dashboard - Modern CSS Styles
-   ============================================ */
-
-/* CSS Variables for consistent theming */
+/*Dashbaord admin*/
 :root {
   /* Light theme colors */
   --color-primary: #7380ec;
@@ -550,7 +546,7 @@ main .recent-orders a:hover {
   box-shadow: var(--shadow-light);
 }
 
-/* Right section - Corrigé pour le positionnement à droite */
+/* Right section*/
 .right {
   margin-top: 1.4rem;
   padding: 0;

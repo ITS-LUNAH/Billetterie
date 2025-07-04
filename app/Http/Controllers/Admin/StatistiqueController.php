@@ -23,7 +23,6 @@ class StatistiqueController extends Controller
             $revenuTotal = Billet::join('zone_tarifaire', 'billets.idzone', '=', 'zone_tarifaire.idzone')
                 ->sum('zone_tarifaire.tarif');
 
-            // Alternative si vous avez une colonne prix directement dans billets
             // $revenuTotal = Billet::sum('prix');
 
             // Statistiques par événement avec jointures pour calculer le revenu
@@ -39,7 +38,7 @@ class StatistiqueController extends Controller
                 ->orderBy('revenu_total', 'desc')
                 ->get();
 
-            // Statistiques par mois (derniers 12 mois) - Fixed ambiguous column reference
+            // Statistiques par mois (derniers 12 mois) 
             $statsParMois = Billet::select([
                     DB::raw('YEAR(billets.created_at) as annee'),
                     DB::raw('MONTH(billets.created_at) as mois'),
@@ -53,7 +52,7 @@ class StatistiqueController extends Controller
                 ->orderBy('mois', 'desc')
                 ->get();
 
-            // Top 5 des événements les plus populaires - Fixed column name inconsistency
+            // Top 5 des événements les plus populaires
             $topEvenements = Event::select([
                     'evenements.idevenement',
                     'evenements.titre',
@@ -77,9 +76,6 @@ class StatistiqueController extends Controller
         } catch (\Exception $e) {
             // Pour déboguer, affichez l'erreur
             dd('Erreur: ' . $e->getMessage(), $e->getTraceAsString());
-            
-            // En production, vous pouvez rediriger avec un message d'erreur
-            // return redirect()->back()->with('error', 'Erreur lors du chargement des statistiques');
         }
     }
 }

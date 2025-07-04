@@ -1,6 +1,6 @@
-/* createEvent.css - CSS pour le formulaire de création d'événement */
+/* createEvent.css : ici pour le code CSS pour le formulaire de création d'événement */
 
-/* Reset et base */
+
 * {
     margin: 0;
     padding: 0;
@@ -541,7 +541,7 @@ select:focus {
     animation: focusRing 0.3s ease-out;
 }
 
-/* Placeholder styling */
+/* style de Placeholder */
 input::placeholder,
 textarea::placeholder {
     color: #9ca3af;

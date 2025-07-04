@@ -10,7 +10,7 @@ const logout = () => {
         router.post('/logout');
     }
 };
-// Définissez les props que ce composant peut recevoir du contrôleur Laravel
+// Définission des props que ce composant peut recevoir du contrôleur Laravel
 defineProps({
     message: String,
     user: Object,
@@ -63,7 +63,7 @@ const startQrScanner = async () => {
         // Attendre que l'élément DOM soit disponible
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        // Configuration du scanner
+        // Pour la configuration du scanner
         const config = {
             fps: 10,
             qrbox: { width: 250, height: 250 },
@@ -100,7 +100,6 @@ const onScanSuccess = (decodedText, decodedResult) => {
 
 // Fonction appelée lors d'une erreur de scan
 const onScanFailure = (error) => {
-    // Ne pas afficher les erreurs de scan normales (pas de QR code détecté)
     // console.warn(`Erreur de scan QR: ${error}`);
 };
 
@@ -121,7 +120,6 @@ const stopQrScanner = () => {
 // Fonction pour traiter le résultat du scan QR
 const processQrResult = (qrText) => {
     try {
-        // Essayer de parser le QR code comme JSON (pour les billets d'événement)
         const qrData = JSON.parse(qrText);
         
         if (qrData.type === 'event_ticket') {
@@ -135,7 +133,6 @@ const processQrResult = (qrText) => {
             handleGenericQr(qrText);
         }
     } catch (error) {
-        // Si ce n'est pas du JSON, traiter comme un QR code simple
         handleGenericQr(qrText);
     }
 };
@@ -143,8 +140,7 @@ const processQrResult = (qrText) => {
 // Gérer un billet d'événement
 const handleEventTicket = (ticketData) => {
     console.log('Billet d\'événement scanné:', ticketData);
-    // Ici vous pouvez ajouter la logique pour valider le billet
-    // Par exemple, faire un appel API pour vérifier la validité
+    // Ici pour valider le billet
     alert(`Billet scanné pour l'événement: ${ticketData.eventName}\nParticipant: ${ticketData.participantName}`);
 };
 
@@ -178,7 +174,7 @@ onUnmounted(() => {
         </template>
 
         <div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
-            <!-- Header personnalisé -->
+            <!-- Header -->
             <header class="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-white/20">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div class="flex justify-between items-center">

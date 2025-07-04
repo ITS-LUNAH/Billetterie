@@ -29,15 +29,12 @@ class EvenementController extends Controller
         return view('admin.evenements.edit', compact('evenement', 'organisateurs'));
     }
 
-    // SOLUTION TEMPORAIRE - Update method sans validation stricte
     public function update(Request $request, $id)
     {
-        // DEBUG: Voir exactement ce qui est envoyé
         \Log::info('Form data received:', $request->all());
         
         $evenement = Event::findOrFail($id);
-        
-        // Validation de base sans idorganisateur pour le moment
+
         $request->validate([
             'titre' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -70,7 +67,6 @@ class EvenementController extends Controller
         $evenement->typeplacement = $request->typeplacement;
         $evenement->estValide = $request->has('estValide') ? true : false;
         
-        // Mettre à jour idorganisateur seulement s'il n'est pas vide
         if (!empty($idorganisateur)) {
             $evenement->idorganisateur = $idorganisateur;
         }
@@ -81,7 +77,7 @@ class EvenementController extends Controller
                         ->with('success', 'Événement mis à jour avec succès.');
     }
 
-    // Method to delete an event
+    // Méthode pour supprimer un événement
     public function destroy($id) {
         $evenement = Event::findOrFail($id);
         $evenement->delete();
@@ -97,7 +93,6 @@ class EvenementController extends Controller
         return redirect()->back()->with('success', 'Événement refusé avec succès.');
     }
 
-    // Toggle validation method
     public function toggleValidation($id)
     {
         try {

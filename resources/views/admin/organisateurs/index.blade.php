@@ -180,7 +180,7 @@
         $('.container-fluid').prepend(alertHtml);
         setTimeout(function() {
             $('.alert').alert('close');
-        }, 5000); // Alert disappears after 5 seconds
+        }, 5000); // une alerte disapparue après 5 seconds
     }
 
     $('#organisateurDetailModal').on('show.bs.modal', function (event) {
@@ -210,21 +210,20 @@
     });
 
     $(document).ready(function() {
-        // Initialize DataTables with Bootstrap 4 styling
         $('#organisateursTable').DataTable({
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
             },
             "paging": true,
-            "searching": true, // Enable search bar
+            "searching": true,
             "info": true,
             "ordering": true,
             "columnDefs": [
-                { "orderable": false, "targets": [5, 6, 7] } // Disable ordering for Validation, Activity, and Actions columns
+                { "orderable": false, "targets": [5, 6, 7] }
             ]
         });
 
-        // AJAX for activity toggle
+        // AJAX pour activer toggle
         $('.toggle-activite-organisateur-icon').on('click', function(e) {
             e.preventDefault();
 
@@ -234,10 +233,8 @@
 
             var url;
             if (currentEstActif) {
-                // If currently active, we want to suspend it
                 url = '{{ route("admin.organisateurs.suspendre", ":id") }}';
             } else {
-                // If currently suspended, we want to reactivate it
                 url = '{{ route("admin.organisateurs.reactiver", ":id") }}';
             }
             url = url.replace(':id', organisateurId);
@@ -253,11 +250,11 @@
                         showTemporaryAlert(response.message, 'success');
 
                         var $icon = $('#organisateur-icon-' + organisateurId);
-                        if (!currentEstActif) { // If it was suspended, now it's active
+                        if (!currentEstActif) {
                             $icon.removeClass('fa-toggle-off text-danger').addClass('fa-toggle-on text-success');
                             $link.data('estactif', 1);
                             $link.attr('title', 'Suspendre l\'organisateur');
-                        } else { // If it was active, now it's suspended
+                        } else {
                             $icon.removeClass('fa-toggle-on text-success').addClass('fa-toggle-off text-danger');
                             $link.data('estactif', 0);
                             $link.attr('title', 'Réactiver l\'organisateur');
@@ -282,7 +279,6 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css"/>
 <style>
-    /* Custom styling for DataTables search input to make it look nicer */
     .dataTables_filter input {
         border-radius: .25rem;
         border: 1px solid #ced4da;
@@ -294,19 +290,18 @@
         outline: 0;
         box-shadow: 0 0 0 .2rem rgba(0,123,255,.25);
     }
-    /* Align search and entries dropdown */
+    
     .dataTables_wrapper .row:first-child {
         align-items: center;
     }
-    /* Styles for the toggle switch icons */
+   
     .toggle-activite-organisateur-icon {
         cursor: pointer;
-        display: inline-block; /* Allows vertical alignment and margin */
+        display: inline-block;
         vertical-align: middle;
     }
     .toggle-activite-organisateur-icon i {
-        /* Ensure Font Awesome icons are sized correctly */
-        line-height: 1; /* Adjust if needed */
+        line-height: 1;
     }
 </style>
 @endpush

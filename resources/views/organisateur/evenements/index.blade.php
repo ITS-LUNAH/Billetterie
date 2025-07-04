@@ -65,12 +65,6 @@
                                             @case('numerote')
                                                 <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Numéroté</span>
                                                 @break
-                                            @case('par_zone')
-                                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Par zone</span>
-                                                @break
-                                            @case('vip')
-                                                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">VIP</span>
-                                                @break
                                             @default
                                                 <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs">{{ ucfirst($event->typeplacement) }}</span>
                                         @endswitch

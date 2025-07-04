@@ -177,7 +177,7 @@
         }
     }
 
-    // Fonction pour afficher une alerte temporaire (inchangée)
+    // Fonction pour afficher une alerte temporaire
     function showTemporaryAlert(message, type = 'success') {
         var alertHtml = `
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -225,11 +225,11 @@
     // Nouveau script pour les icônes cliquables d'activation/désactivation
     $(document).ready(function() {
         $('.toggle-validation-icon').on('click', function(e) {
-            e.preventDefault(); // Empêche le comportement par défaut du lien
+            e.preventDefault();
 
-            var $link = $(this); // Le lien <a> cliqué
+            var $link = $(this); 
             var evenementId = $link.data('id');
-            var currentEstValide = $link.data('estvalide') === 1; // Convertir en boolean
+            var currentEstValide = $link.data('estvalide') === 1;
 
             var url = '{{ route("admin.evenements.toggleValidation", ":id") }}';
             url = url.replace(':id', evenementId);
@@ -239,8 +239,6 @@
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}'
-                    // Pas besoin d'envoyer 'estActif' car le contrôleur l'inverse.
-                    // Si le contrôleur avait besoin de l'état ciblé, on enverrait estActif: !currentEstActif
                 },
                 success: function(response) {
                     if (response.success) {
@@ -248,14 +246,14 @@
 
                         // Mettre à jour l'icône et l'attribut data-estactif
                         var $icon = $('#icon-' + evenementId);
-                        if (response.estValide) { // Si l'événement est maintenant ACTIF
+                        if (response.estValide) {
                             $icon.removeClass('fa-toggle-off text-danger').addClass('fa-toggle-on text-success');
-                            $link.data('estvalide', 1); // Met à jour l'état dans les données du lien
-                            $link.attr('title', 'Désactiver l\'événement'); // Met à jour l'infobulle
-                        } else { // Si l'événement est maintenant INACTIF
+                            $link.data('estvalide', 1);
+                            $link.attr('title', 'Désactiver l\'événement'); 
+                        } else {
                             $icon.removeClass('fa-toggle-on text-success').addClass('fa-toggle-off text-danger');
-                            $link.data('estvalide', 0); // Met à jour l'état dans les données du lien
-                            $link.attr('title', 'Valider l\'événement'); // Met à jour l'infobulle
+                            $link.data('estvalide', 0);
+                            $link.attr('title', 'Valider l\'événement');
                         }
                     } else {
                         showTemporaryAlert('Erreur lors de la mise à jour du statut.', 'danger');

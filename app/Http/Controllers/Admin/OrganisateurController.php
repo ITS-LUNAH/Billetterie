@@ -9,9 +9,8 @@ use Inertia\Inertia;
 class OrganisateurController extends Controller
 {
     public function index() {
-        // Eager load the 'user' relationship and select specific columns
         $organisateurs = Organisateur::with(['user' => function($query) {
-            $query->select('id', 'email'); // Select 'id' and 'email' from the users table
+            $query->select('id', 'email');
         }])->get();
 
         return view('admin.organisateurs.index', compact('organisateurs'));
@@ -20,21 +19,21 @@ class OrganisateurController extends Controller
     public function show($id)
     {
         $organisateur = Organisateur::findOrFail($id);
-        return view('admin.organisateurs.show', compact('organisateur')); // Assuming you might create a show.blade.php
+        return view('admin.organisateurs.show', compact('organisateur'));
     }
 
     public function valider($id) {
         $org = Organisateur::findOrFail($id);
         $org->estValide = true;
         $org->save();
-        return back()->with('success', 'Organisateur validé.'); // Updated message for consistency
+        return back()->with('success', 'Organisateur validé.');
     }
 
-    public function refuser($id) { // New method for refusing validation
+    public function refuser($id) {
         $org = Organisateur::findOrFail($id);
-        $org->estValide = false; // Set to false to mark as refused or pending
+        $org->estValide = false;
         $org->save();
-        return back()->with('error', 'Organisateur refusé.'); // Using 'error' for refusal
+        return back()->with('error', 'Organisateur refusé.');
     }
 
    public function suspendre($id) {
@@ -110,7 +109,6 @@ class OrganisateurController extends Controller
         return $this->lastName . ' ' . $this->firstName;
     }
 
-    // If you have a relationship to a User model for user_id
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

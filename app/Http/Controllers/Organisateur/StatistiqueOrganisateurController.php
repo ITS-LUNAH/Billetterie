@@ -19,18 +19,16 @@ class StatistiqueOrganisateurController extends Controller
                           ->where('estActif', true)
                           ->count();
 
-        // Total participants (sur tous les événements de cet organisateur)
+        // Total participants
         $eventIds = Evenement::where('idorganisateur', $organisateurId)->pluck('idevenement');
         $totalParticipants = Reservation::whereIn('idevenement', $eventIds)->count();
 
-        // Revenus mensuels (exemple : somme des prix base multipliée par réservations ce mois)
+        // Revenus mensuels
         $currentMonth = now()->format('Y-m');
         $monthlyRevenue = Reservation::whereIn('idevenement', $eventIds)
                           ->where('created_at', 'like', "$currentMonth%")
-                          ->sum('montant_paye'); // Suppose une colonne montant_paye
+                          ->sum('montant_paye');
 
-        // Note moyenne (exemple, si tu as une table notes ou évaluations)
-        // Ici on met une valeur par défaut, à adapter selon ta DB
         $averageRating = 4.2; 
 
         return response()->json([

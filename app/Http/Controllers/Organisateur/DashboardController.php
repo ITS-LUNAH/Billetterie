@@ -46,15 +46,12 @@ class DashboardController extends Controller
         $eventIds = $evenements->pluck('idevenement');
 
         // --- Statistiques générales ---
-        // Nombre d’événements actifs (validés et actifs)
         $activeEventsCount = $evenements->where('estvalide', true)->where('estActif', true)->count();
 
         // Total participants (nombre total de réservations)
         $totalReservations = Reservation::whereIn('idevenement', $eventIds)->count();
         $totalBillets = $totalReservations; // Si 1 réservation = 1 billet, sinon ajuster si une réservation peut avoir plusieurs billets
 
-        // Revenu Total (somme des 'montant_paye' pour toutes les réservations)
-        // Assurez-vous que la colonne 'montant_paye' existe dans votre table 'reservations'
         $revenuTotal = Reservation::whereIn('idevenement', $eventIds)->sum('montant_paye');
 
         // Revenus mensuels (nombre de réservations pour le mois en cours)
@@ -63,19 +60,17 @@ class DashboardController extends Controller
                                      ->whereMonth('created_at', Carbon::now()->month)
                                      ->count();
 
-        // Note moyenne (à adapter si vous avez un système de notation)
         $averageRating = 'N/A'; //n'est pas appliqué
 
         // --- Statistiques par événement ---
-        // Modification ici : utiliser 'evenements.titre' explicitement
         $statsParEvenement = Event::where('evenements.idorganisateur', $organisateur->idOrganisateur)
             ->leftJoin('reservations', 'evenements.idevenement', '=', 'reservations.idevenement')
             ->select(
-                'evenements.titre', // Utilisation explicite du nom de table
+                'evenements.titre',
                 DB::raw('COUNT(reservations.idreservation) as billets_count'),
                 DB::raw('SUM(reservations.montant_paye) as revenu_total')
             )
-            ->groupBy('evenements.idevenement', 'evenements.titre') // Utilisation explicite du nom de table
+            ->groupBy('evenements.idevenement', 'evenements.titre')
             ->orderByDesc('billets_count')
             ->get();
 
@@ -94,13 +89,6 @@ class DashboardController extends Controller
             ->orderBy('annee', 'asc')
             ->orderBy('mois', 'asc')
             ->get();
-
-        // Filtrer pour les 12 derniers mois si nécessaire (déjà fait par take(-12) en JS)
-        // Ou vous pouvez le faire ici si vous préférez:
-        // $statsParMois = $statsParMois->filter(function ($item) {
-        //     $date = Carbon::create($item->annee, $item->mois, 1);
-        //     return $date->gte(Carbon::now()->subMonths(12)->startOfMonth());
-        // });
 
 
         // Activités récentes fictives
